@@ -1,0 +1,1 @@
+#Funciones unitarias que pueden ser reutilizadas en varios módulos
