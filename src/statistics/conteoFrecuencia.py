@@ -1,6 +1,7 @@
 import csv
 import matplotlib.pyplot as plt
 from collections import defaultdict
+import re
 
 
 # Ruta al archivo CSV
@@ -110,61 +111,48 @@ categorias = {
         "Mimo": ["Mimo"]
 }
 }
-
-# Función para contar la frecuencia de aparición
 def contar_frecuencias(abstract, categorias):
     frecuencias = defaultdict(int)
-    # Convertir a minúsculas para búsqueda case-insensitive
     abstract = abstract.lower()
+    abstract = re.sub(r'[^\w\s]', ' ', abstract)
+    palabras = abstract.split()
 
     for categoria, variables in categorias.items():
         for variable, sinonimos in variables.items():
             for sinonimo in sinonimos:
-                if sinonimo.lower() in abstract:
-                    frecuencias[variable] += 1
+                patron = r'\b' + re.escape(sinonimo.lower()) + r'\b'
+                for palabra in palabras:
+                    if re.search(patron, palabra):
+                        frecuencias[variable] += 1
     return frecuencias
 
-# Leer el archivo CSV
-with open(ruta_csv, mode='r', newline='', encoding='utf-8-sig') as archivo:
-    lector_csv = csv.DictReader(archivo)
+def analizar_abstracts(file_path):
+    # Leer el archivo CSV
+    with open(file_path, mode='r', newline='', encoding='utf-8-sig') as archivo:
+        lector_csv = csv.DictReader(archivo)
+        conteo_total = defaultdict(int)
 
-    # Recorrer los artículos y sus abstracts
-    conteo_total = defaultdict(int)
-    for fila in lector_csv:
-        resumen = fila.get("Abstract", "")
-        if resumen:
-            frecuencias = contar_frecuencias(resumen, categorias)
-            # Sumar las frecuencias al total
-            for variable, conteo in frecuencias.items():
-                conteo_total[variable] += conteo
+        for fila in lector_csv:
+            resumen = fila.get("Abstract", "")
+            if resumen:
+                frecuencias = contar_frecuencias(resumen, categorias)
+                for variable, conteo in frecuencias.items():
+                    conteo_total[variable] += conteo
 
-# Mostrar el resultado
-print("Frecuencia de aparición de variables en los abstracts:")
+    # Mostrar el resultado
+    print("Frecuencia de aparición de variables en los abstracts:")
+    for variable, conteo in conteo_total.items():
+        print(f"{variable}: {conteo}")
 
+    # Generar el gráfico de barras
+    variables = list(conteo_total.keys())
+    frecuencias = list(conteo_total.values())
 
-for variable, conteo in conteo_total.items():
-    print(f"{variable}: {conteo}")
-
-
-# Preparar los datos para el gráfico
-variables = list(conteo_total.keys())
-frecuencias = list(conteo_total.values())
-
-# Generar el gráfico de barras
-plt.figure(figsize=(10, 6))
-plt.bar(variables, frecuencias, color='skyblue')
-
-# Configuración del gráfico
-plt.title('Frecuencia de Aparición de Variables en Abstracts')
-plt.xlabel('Variables')
-plt.ylabel('Frecuencia')
-plt.xticks(rotation=90)  # Rotar etiquetas de las variables para que no se superpongan
-plt.tight_layout()  # Ajustar el layout para que las etiquetas no se corten
-
-# Ajustar las escalas del gráfico
-max_frecuencia = max(frecuencias)
-plt.yticks(range(0, max_frecuencia +20, 20))
-plt.tight_layout()
-
-# Mostrar el gráfico
-plt.show()
+    plt.figure(figsize=(10, 6))
+    plt.bar(variables, frecuencias, color='skyblue')
+    plt.title('Frecuencia de Aparición de Variables en Abstracts')
+    plt.xlabel('Variables')
+    plt.ylabel('Frecuencia')
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.show()
