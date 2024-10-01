@@ -148,11 +148,22 @@ def analizar_abstracts(file_path):
     variables = list(conteo_total.keys())
     frecuencias = list(conteo_total.values())
 
+
     plt.figure(figsize=(10, 6))
+
+    barras = plt.bar(variables, frecuencias, color='skyblue')  # Genera el gráfico de barras
+
+    for barra in barras:
+        yval = barra.get_height()  # Obtiene la altura de cada barra
+        plt.text(barra.get_x() + barra.get_width()/2, yval + 2, int(yval), ha='center', va='bottom')  # Muestra el valor
+
     plt.bar(variables, frecuencias, color='skyblue')
     plt.title('Frecuencia de Aparición de Variables en Abstracts')
     plt.xlabel('Variables')
     plt.ylabel('Frecuencia')
     plt.xticks(rotation=90)
     plt.tight_layout()
+    plt.yticks(range(0, max(frecuencias) + 50, 50))  # Ajusta la escala del eje Y con un intervalo de 50 en 50.
     plt.show()
+
+   
