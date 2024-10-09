@@ -7,24 +7,16 @@ def load_data(file_path):  # Define una función llamada 'load_data' que toma co
     
     # Renombrar columnas si es necesario
     df.columns = [  # Renombra las columnas del DataFrame 'df' para que tengan nombres más descriptivos y fáciles de usar.
-        'article_title',  # Título del artículo.
-        'author',  # Autor(es) del artículo.
-        'journal_title',  # Título de la revista o publicación.
-        'issn',  # Número ISSN de la revista.
-        'isbn',  # Número ISBN (si aplica).
-        'publication_date',  # Fecha de publicación.
-        'volume',  # Volumen de la publicación.
-        'issue',  # Número de la edición o entrega (issue) de la publicación.
-        'first_page',  # Primera página del artículo.
-        'page_count',  # Número de páginas del artículo.
-        'accession_number',  # Número de acceso (ID único del artículo).
-        'doi',  # DOI (Identificador de Objeto Digital) del artículo.
-        'publisher',  # Editorial que publicó el artículo.
-        'doctype',  # Tipo de documento (por ejemplo, artículo, informe, etc.).
-        'subjects',  # Temas o materias relacionados con el artículo.
-        'keywords',  # Palabras clave asociadas con el artículo.
-        'abstract',  # Resumen del artículo.
-        'plink'  # Enlace persistente del artículo.
+        'Volume',  # Título del artículo.
+        'Author',  # Autor(es) del artículo.
+        'Issn',  # Número ISSN de la revista.
+        'Issue',  # Número de la edición o entrega (issue) de la publicación.
+        'DOI',  # DOI (Identificador de Objeto Digital) del artículo.
+        'Publisher',  # Editorial que publicó el artículo.
+        'Abstract',  # Resumen del artículo.
+        'Title',#Titulo
+        'Publication Title',#Titulo de publicacioón
+        'Year'#Ano de publicacion
     ]
     
     # Verificar valores faltantes
@@ -35,6 +27,6 @@ def load_data(file_path):  # Define una función llamada 'load_data' que toma co
     print(f"Total de filas en el archivo: {len(df)}")  # Muestra cuántas filas (registros) tiene el DataFrame, es decir, cuántos artículos se cargaron.
     
     # Extraer el año de la fecha de publicación
-    df['year'] = pd.to_datetime(df['publication_date'], errors='coerce').dt.year  # Convierte la columna 'publication_date' a un formato de fecha y extrae el año de esa fecha. Si hay errores en la conversión, los ignora (coerce).
+    df['year'] = pd.to_datetime(df['Year'], errors='coerce')  # Convierte la columna 'publication_date' a un formato de fecha y extrae el año de esa fecha. Si hay errores en la conversión, los ignora (coerce).
     
     return df  # Devuelve el DataFrame 'df' con las columnas renombradas y la nueva columna 'year' que contiene solo el año de publicación.
