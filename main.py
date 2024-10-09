@@ -1,78 +1,117 @@
-from src.data.data_processing import load_data  # Importa la función 'load_data' desde el módulo 'data_processing', que se utiliza para cargar el archivo CSV.
-from src.statistics.statistics import descriptive_statistics  # Importa la función 'descriptive_statistics' desde el módulo 'statistics', que se utiliza para generar estadísticas descriptivas.
-from src.statistics.conteoFrecuencia import analizar_abstracts  # Importa la función 'analizar_abstracts' desde el módulo 'conteoFrecuencia', utilizada para analizar abstracts en el CSV.
-from src.union_csv.union_csv import limpiar_columnas_csv # Importa la función para limpiar las columnas y dejar solo unas especificas
-from src.union_csv.union_csv import unificar_data  # Importa la funcion que tiene como finalidad la union de los csv ya con sus columnas limpias
-from dotenv import load_dotenv#Librerias para hacer uso de las variables de entorno
-import os
-import time
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+from src.data.data_processing import load_data
+from src.statistics.statistics import descriptive_statistics
+from src.statistics.conteoFrecuencia import analizar_abstracts
 
-#Carga los datos del archivo .env(variables de entorno)
-load_dotenv()
-
-def main():  # Define la función principal 'main' que manejará la lógica del programa.
+def centrar_ventana(ventana, ancho, alto):
+    # Obtener el ancho y alto de la pantalla
+    ancho_pantalla = ventana.winfo_screenwidth()
+    alto_pantalla = ventana.winfo_screenheight()
     
-    # Especifica la ruta donde estan alojados todos los csv sin modificaciones posteriores a su descarga
-    # Lo que hace es asiganar el valor que esta en el archivo.env 
-    directory_path_csv = os.getenv('DIRECTORY_CSV')
-
-    nombre_documento_unido= os.getenv('NAME_DATA')#Nombre que se asigna por medio de variables de entorno
-
-    unir_data(nombre_documento_unido,directory_path_csv)#LLamado al metodo para unir toda la data en una sola
-
-    while True: 
-                # Especificar la ruta de tu archivo CSV
-            file_path = os.getenv('FILE_PATCH')  # Especifica la ruta donde se encuentra el archivo CSV que se va a analizar.
-            
-            # Cargar los datos
-            df = load_data(file_path)  # Llama a la función 'load_data' para cargar el archivo CSV en un DataFrame de pandas.
-            
-            # Mostrar opciones al usuario
-            print("Seleccione el tipo de análisis:")  # Imprime el mensaje solicitando al usuario seleccionar un tipo de análisis.
-            print("1. Análisis Unidimensional (una variable)")  # Opción 1: Análisis unidimensional de una variable.
-            print("2. Análisis Bidimensional (dos variables)")  # Opción 2: Análisis bidimensional de dos variables.
-            print("3. Análisis de aparición de variables en Abstracts")  # Opción 3: Análisis de abstracts (resúmenes).
-            print("4. Unir todas las bases de datos en una sola") #Opción 4: Union de todos los csv en uno solo
-
-            choice = input("Ingrese su opción (1, 2 o 3): ")  # Solicita al usuario que ingrese su elección de análisis y guarda la entrada en la variable 'choice'.
-            
-            if choice == "1":  # Si el usuario elige la opción 1 (análisis unidimensional):
-                # Pedir la columna para el análisis unidimensional
-                column = input("Ingrese el nombre de la columna para el análisis unidimensional: ")  # Solicita al usuario el nombre de la columna que desea analizar.
-                result = descriptive_statistics(df, column)  # Llama a la función 'descriptive_statistics' para calcular estadísticas de la columna seleccionada.
-                print(f"\nEstadísticas descriptivas para {column}:")  # Imprime el nombre de la columna analizada.
-                print(result)  # Muestra las estadísticas descriptivas generadas.
-
-            elif choice == "2":  # Si el usuario elige la opción 2 (análisis bidimensional):
-                # Pedir las dos columnas para el análisis bidimensional
-                column1 = input("Ingrese el nombre de la primera columna: ")  # Solicita al usuario el nombre de la primera columna.
-                column2 = input("Ingrese el nombre de la segunda columna: ")  # Solicita al usuario el nombre de la segunda columna.
-                result = descriptive_statistics(df, column1, column2)  # Llama a la función 'descriptive_statistics' con dos columnas para generar estadísticas bidimensionales.
-                print(f"\nEstadísticas descriptivas para {column1} y {column2}:")  # Imprime los nombres de las columnas analizadas.
-                print(result)  # Muestra las estadísticas descriptivas generadas para las dos columnas.
-
-            elif choice == "3":  # Si el usuario elige la opción 3 (análisis de abstracts):
-                # Llamar al análisis de abstracts usando la función existente
-                analizar_abstracts(file_path)  # Llama a la función 'analizar_abstracts' para realizar el análisis de los abstracts en el archivo CSV.
-
-            elif choice == "4": #Opcion de salida
-                print("Saliendo del programa...")
-                break
-
-            else:  # Si el usuario ingresa una opción inválida (distinta de 1, 2 o 3):
-                print("Opción no válida. Por favor, seleccione 1 , 2 , 3 , 4.")  # Imprime un mensaje de error indicando que la opción no es válida.
-
+    # Calcular las coordenadas x e y para centrar la ventana
+    x = (ancho_pantalla // 2) - (ancho // 2)
+    y = (alto_pantalla // 2) - (alto // 2)
     
+    # Asignar la geometría centrada
+    ventana.geometry(f"{ancho}x{alto}+{x}+{y}")
 
- #Metodo que une toda la data en un solo archivo csv
-def unir_data(nombre_archivo,directory_path_csv):
-    #datos en un solo csv (Los unifica)
-    nombre_archivo="data_unido.csv"
-    limpiar_columnas_csv(directory_path_csv) #falta agregar documentos
-    unificar_data(directory_path_csv,nombre_archivo) #Despues de limpiar las columnas, las unifica
-    time.sleep(3)  
-              
-            
-            
-if __name__ == "__main__":  # Comprueba si el script se está ejecutando como el programa principal.
-    main()  # Llama a la función 'main' para iniciar el programa.
+def realizar_analisis(tipo_analisis, df):
+    if tipo_analisis == "Análisis Unidimensional":
+        ventana_unidimensional = tk.Toplevel()
+        ventana_unidimensional.title("Análisis Unidimensional")
+        centrar_ventana(ventana_unidimensional, 300, 150)
+
+        label = ttk.Label(ventana_unidimensional, text="Ingrese el nombre de la columna:")
+        label.pack(pady=10)
+
+        columna_entry = ttk.Entry(ventana_unidimensional)
+        columna_entry.pack(pady=10)
+
+        def procesar_unidimensional():
+            column = columna_entry.get()
+            if column:
+                result = descriptive_statistics(df, column)
+                messagebox.showinfo(f"Estadísticas descriptivas para {column}", str(result))
+                ventana_unidimensional.destroy()
+            else:
+                messagebox.showerror("Error", "Debe ingresar una columna válida.")
+
+        button = ttk.Button(ventana_unidimensional, text="Procesar", command=procesar_unidimensional)
+        button.pack(pady=10)
+
+    elif tipo_analisis == "Análisis Bidimensional":
+        ventana_bidimensional = tk.Toplevel()
+        ventana_bidimensional.title("Análisis Bidimensional")
+        centrar_ventana(ventana_bidimensional, 300, 200)
+
+        label1 = ttk.Label(ventana_bidimensional, text="Ingrese el nombre de la primera columna:")
+        label1.pack(pady=10)
+
+        columna1_entry = ttk.Entry(ventana_bidimensional)
+        columna1_entry.pack(pady=10)
+
+        label2 = ttk.Label(ventana_bidimensional, text="Ingrese el nombre de la segunda columna:")
+        label2.pack(pady=10)
+
+        columna2_entry = ttk.Entry(ventana_bidimensional)
+        columna2_entry.pack(pady=10)
+
+        def procesar_bidimensional():
+            column1 = columna1_entry.get()
+            column2 = columna2_entry.get()
+            if column1 and column2:
+                result = descriptive_statistics(df, column1, column2)
+                messagebox.showinfo(f"Estadísticas descriptivas para {column1} y {column2}", str(result))
+                ventana_bidimensional.destroy()
+            else:
+                messagebox.showerror("Error", "Debe ingresar ambas columnas.")
+
+        button = ttk.Button(ventana_bidimensional, text="Procesar", command=procesar_bidimensional)
+        button.pack(pady=10)
+
+    elif tipo_analisis == "Análisis de Abstracts":
+        analizar_abstracts('data/APPLIED AND ENGINEERING.csv')
+        messagebox.showinfo("Análisis de Abstracts", "Análisis de abstracts completado.")
+
+def main():
+    # Cargar los datos
+    file_path = 'data/APPLIED AND ENGINEERING.csv'
+    df = load_data(file_path)
+
+    # Crear la ventana principal
+    root = tk.Tk()
+    root.title("Análisis de Datos")
+
+    # Configurar el tamaño de la ventana y centrarla
+    ancho_ventana = 400
+    alto_ventana = 200
+    centrar_ventana(root, ancho_ventana, alto_ventana)
+
+    # Etiqueta principal
+    label = ttk.Label(root, text="Seleccione el tipo de análisis:")
+    label.pack(pady=10)
+
+    # Crear el combobox para seleccionar el tipo de análisis
+    options = ["Análisis Unidimensional", "Análisis Bidimensional", "Análisis de Abstracts"]
+    combo = ttk.Combobox(root, values=options)
+    combo.set("Seleccione un análisis")
+    combo.pack(pady=10)
+
+    # Crear el botón para iniciar el análisis
+    def iniciar_analisis():
+        seleccion = combo.get()
+        if seleccion in options:
+            realizar_analisis(seleccion, df)
+        else:
+            messagebox.showerror("Error", "Seleccione una opción válida")
+
+    button = ttk.Button(root, text="Iniciar Análisis", command=iniciar_analisis)
+    button.pack(pady=10)
+
+    # Ejecutar el bucle principal de tkinter
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
