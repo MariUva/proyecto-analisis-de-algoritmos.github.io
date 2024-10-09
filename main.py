@@ -1,23 +1,27 @@
+from src.data.data_processing import load_data  # Para cargar el archivo CSV.
+from src.statistics.statistics import descriptive_statistics  # Para generar estadísticas descriptivas.
+from src.statistics.conteoFrecuencia import analizar_abstracts  # Para analizar abstracts en el CSV.
+from src.union_csv.union_csv import limpiar_columnas_csv, unificar_data  # Para limpiar columnas y unificar CSVs.
+from dotenv import load_dotenv  # Para cargar las variables de entorno.
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from src.data.data_processing import load_data
-from src.statistics.statistics import descriptive_statistics
-from src.statistics.conteoFrecuencia import analizar_abstracts
+import os
+import time
+
+# Carga las variables de entorno desde el archivo .env
+load_dotenv()
 
 def centrar_ventana(ventana, ancho, alto):
-    # Obtener el ancho y alto de la pantalla
+    # Centra la ventana en la pantalla
     ancho_pantalla = ventana.winfo_screenwidth()
     alto_pantalla = ventana.winfo_screenheight()
-    
-    # Calcular las coordenadas x e y para centrar la ventana
     x = (ancho_pantalla // 2) - (ancho // 2)
     y = (alto_pantalla // 2) - (alto // 2)
-    
-    # Asignar la geometría centrada
     ventana.geometry(f"{ancho}x{alto}+{x}+{y}")
 
 def realizar_analisis(tipo_analisis, df):
+    # Función para realizar los análisis basados en la selección del usuario
     if tipo_analisis == "Análisis Unidimensional":
         ventana_unidimensional = tk.Toplevel()
         ventana_unidimensional.title("Análisis Unidimensional")
@@ -75,12 +79,25 @@ def realizar_analisis(tipo_analisis, df):
         analizar_abstracts('data/APPLIED AND ENGINEERING.csv')
         messagebox.showinfo("Análisis de Abstracts", "Análisis de abstracts completado.")
 
+def unir_data(nombre_archivo, directory_path_csv):
+    # Función que unifica la data de varios CSV en uno solo
+    limpiar_columnas_csv(directory_path_csv)
+    unificar_data(directory_path_csv, nombre_archivo)
+    time.sleep(3)  # Simulación del proceso de unificación
+
 def main():
+    # Cargar los datos desde el archivo CSV
+    directory_path_csv = os.getenv('DIRECTORY_CSV')  # Ruta de los CSV desde el .env
+    nombre_documento_unido = os.getenv('NAME_DATA')  # Nombre del archivo unido desde el .env
+    file_path = os.getenv('FILE_PATCH')  # Ruta del archivo para análisis desde el .env
+
+    # Unir data si es necesario
+    unir_data(nombre_documento_unido, directory_path_csv)
+
     # Cargar los datos
-    file_path = 'data/APPLIED AND ENGINEERING.csv'
     df = load_data(file_path)
 
-    # Crear la ventana principal
+    # Crear la ventana principal con Tkinter
     root = tk.Tk()
     root.title("Análisis de Datos")
 
