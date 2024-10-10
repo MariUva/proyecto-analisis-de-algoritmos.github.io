@@ -2,10 +2,16 @@ import csv
 import matplotlib.pyplot as plt
 from collections import defaultdict
 import re
+import tkinter as tk
+from tkinter import ttk, messagebox
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.style as style
 
 
 # Ruta al archivo CSV
-ruta_csv = r'./data/APPLIED AND ENGINEERING.csv'
+#ruta_csv = r'./data/APPLIED AND ENGINEERING.csv'
+
+ruta_csv = r'./data/bases_datos/data_unido.csv'
 
 # Definir categorías y sinónimos
 categorias = {
@@ -111,6 +117,7 @@ categorias = {
         "Mimo": ["Mimo"]
 }
 }
+# Función para contar frecuencias
 def contar_frecuencias(abstract, categorias):
     frecuencias = defaultdict(int)
     abstract = abstract.lower()
@@ -126,44 +133,100 @@ def contar_frecuencias(abstract, categorias):
                         frecuencias[variable] += 1
     return frecuencias
 
+# Función para analizar abstracts
 def analizar_abstracts(file_path):
-    # Leer el archivo CSV
     with open(file_path, mode='r', newline='', encoding='utf-8-sig') as archivo:
         lector_csv = csv.DictReader(archivo)
-        conteo_total = defaultdict(int)
-
+        conteo_total = defaultdict(lambda: defaultdict(int))
+        
         for fila in lector_csv:
             resumen = fila.get("Abstract", "")
             if resumen:
                 frecuencias = contar_frecuencias(resumen, categorias)
                 for variable, conteo in frecuencias.items():
-                    conteo_total[variable] += conteo
+                    for categoria, variables in categorias.items():
+                        if variable in variables:
+                            conteo_total[categoria][variable] += conteo
+    return conteo_total
 
-    # Mostrar el resultado
-    print("Frecuencia de aparición de variables en los abstracts:")
-    for variable, conteo in conteo_total.items():
-        print(f"{variable}: {conteo}")
+# Función para agregar gráfico en pestaña
+def agregar_grafico_pestana(tab_control, nombre_categoria, conteo):
+    tab = ttk.Frame(tab_control)
+    tab_control.add(tab, text=nombre_categoria)
 
-    # Generar el gráfico de barras
-    variables = list(conteo_total.keys())
-    frecuencias = list(conteo_total.values())
+    variables = list(conteo.keys())
+    frecuencias = list(conteo.values())
 
+    # Ajustar el tamaño de la figura en función del número de variables
+    ancho_figura = 5 + len(variables) * 1.5
+    ancho_figura = min(ancho_figura, 15)
+    
+    fig, ax = plt.subplots(figsize=(ancho_figura, 5))
+    
+    bars = ax.bar(variables, frecuencias, color='skyblue')
+    ax.set_title(f'Frecuencia de Aparición - {nombre_categoria}')
+    ax.set_xlabel('Variables')
+    ax.set_ylabel('Frecuencia')
+    ax.tick_params(axis='x', rotation=45, labelsize=8)
 
-    plt.figure(figsize=(10, 6))
+    # Mostrar los valores en cada barra
+    for bar in bars:
+        yval = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, yval + 1, int(yval), ha='center', va='bottom')
 
-    barras = plt.bar(variables, frecuencias, color='skyblue')  # Genera el gráfico de barras
+    canvas = FigureCanvasTkAgg(fig, master=tab)
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-    for barra in barras:
-        yval = barra.get_height()  # Obtiene la altura de cada barra
-        plt.text(barra.get_x() + barra.get_width()/2, yval + 2, int(yval), ha='center', va='bottom')  # Muestra el valor
+    # Cerrar la figura para evitar la ventana adicional
+    plt.close(fig)
 
-    plt.bar(variables, frecuencias, color='skyblue')
-    plt.title('Frecuencia de Aparición de Variables en Abstracts')
-    plt.xlabel('Variables')
-    plt.ylabel('Frecuencia')
-    plt.xticks(rotation=90)
-    plt.tight_layout()
-    plt.yticks(range(0, max(frecuencias) + 50, 50))  # Ajusta la escala del eje Y con un intervalo de 50 en 50.
-    plt.show()
+# Función para agregar pestaña de totales
+def agregar_pestana_totales(tab_control, conteo_total):
+    tab_totales = ttk.Frame(tab_control)
+    tab_control.add(tab_totales, text="Totales por Categoría")
 
-   
+    fig, ax = plt.subplots(figsize=(8, 5))
+    categorias = list(conteo_total.keys())
+    total_por_categoria = [sum(conteo.values()) for conteo in conteo_total.values()]
+
+    bars = ax.bar(categorias, total_por_categoria, color='lightgreen')
+    ax.set_title("Totales por Categoría")
+    ax.set_xlabel("Categorías")
+    ax.set_ylabel("Total Frecuencia")
+    ax.tick_params(axis='x', rotation=45, labelsize=8)
+
+    # Mostrar los valores en cada barra
+    for bar in bars:
+        yval = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, yval + 1, int(yval), ha='center', va='bottom')
+
+    canvas = FigureCanvasTkAgg(fig, master=tab_totales)
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    # Cerrar la figura para evitar la ventana adicional
+    plt.close(fig)
+
+# Función para crear ventana con pestañas
+def crear_ventana_con_pestanas(conteo_total):
+    ventana = tk.Toplevel()
+    ventana.title("Gráficos por Categoría")
+    ventana.geometry('900x600')
+
+    tab_control = ttk.Notebook(ventana)
+    tab_control.pack(expand=1, fill="both")
+
+    # Agregar gráficos en cada pestaña
+    for categoria, conteo in conteo_total.items():
+        agregar_grafico_pestana(tab_control, categoria, conteo)
+
+    # Agregar la pestaña de totales
+    agregar_pestana_totales(tab_control, conteo_total)
+
+    ventana.protocol("WM_DELETE_WINDOW", ventana.destroy)
+
+# Función para abrir la ventana desde el botón
+def mostrar_graficos():
+    conteo_total = analizar_abstracts(ruta_csv)
+    crear_ventana_con_pestanas(conteo_total)

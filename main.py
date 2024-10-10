@@ -1,6 +1,6 @@
 from src.data.data_processing import load_data  # Para cargar el archivo CSV.
 from src.statistics.statistics import descriptive_statistics  # Para generar estadísticas descriptivas.
-from src.statistics.conteoFrecuencia import analizar_abstracts  # Para analizar abstracts en el CSV.
+from src.statistics.conteoFrecuencia import analizar_abstracts, crear_ventana_con_pestanas  # Para analizar abstracts en el CSV.
 from src.union_csv.union_csv import limpiar_columnas_csv, unificar_data  # Para limpiar columnas y unificar CSVs.
 from dotenv import load_dotenv  # Para cargar las variables de entorno.
 import tkinter as tk
@@ -75,9 +75,16 @@ def realizar_analisis(tipo_analisis, df):
         button = ttk.Button(ventana_bidimensional, text="Procesar", command=procesar_bidimensional)
         button.pack(pady=10)
 
+ 
     elif tipo_analisis == "Análisis de Abstracts":
-        analizar_abstracts('data/APPLIED AND ENGINEERING.csv')
-        messagebox.showinfo("Análisis de Abstracts", "Análisis de abstracts completado.")
+
+       #conteo_total = analizar_abstracts('data/APPLIED AND ENGINEERING.csv')  # Llama a la función para obtener el conteo
+
+       conteo_total = analizar_abstracts('data/bases_datos/data_unido.csv')  # Llama a la función para obtener el conteo
+       crear_ventana_con_pestanas(conteo_total)  # Muestra la ventana con los gráficos
+        
+        #analizar_abstracts('data/APPLIED AND ENGINEERING.csv')
+        #messagebox.showinfo("Análisis de Abstracts", "Análisis de abstracts completado.")
 
 def unir_data(nombre_archivo, directory_path_csv):
     # Función que unifica la data de varios CSV en uno solo
