@@ -2,12 +2,13 @@ from src.data.data_processing import load_data  # Para cargar el archivo CSV.
 from src.statistics.statistics import descriptive_statistics  # Para generar estadísticas descriptivas.
 from src.statistics.conteoFrecuencia import analizar_abstracts, crear_ventana_con_pestanas  # Para analizar abstracts en el CSV.
 from src.union_csv.union_csv import limpiar_columnas_csv, unificar_data  # Para limpiar columnas y unificar CSVs.
-from dotenv import load_dotenv  # Para cargar las variables de entorno.
+#from dotenv import load_dotenv  # Para cargar las variables de entorno.
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import os
 import time
+from dotenv import load_dotenv
 
 # Carga las variables de entorno desde el archivo .env
 load_dotenv()
