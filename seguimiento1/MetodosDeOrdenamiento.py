@@ -32,7 +32,7 @@ class MetodosDeOrdenamiento:
 
     # 4. Tree Sort (O(n log n))
     class Node:
-        def _init_(self, key):
+        def __init__(self, key):
             self.left = None
             self.right = None
             self.val = key
