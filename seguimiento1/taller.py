@@ -105,40 +105,92 @@ def analizar_columna(columna_elegida, columna_nombre, archivo):
     return resultados
 
 # Función para mostrar gráficos en Tkinter
+# Función para mostrar gráficos en Tkinter en pestañas separadas
+# Función para mostrar gráficos en Tkinter con tablas debajo de cada gráfico
 def mostrar_graficos(resultados, columna_nombre):
     ventana = tk.Tk()
     ventana.title(f"Resultados de Ordenamiento - Columna: {columna_nombre}")
-    ventana.geometry('800x600')
+    ventana.geometry('1200x800')  # Ajustar tamaño para la interfaz
 
-    # Crear un frame para el gráfico y la tabla
-    frame_grafico = tk.Frame(ventana)
-    frame_grafico.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+    # Crear un notebook para las pestañas
+    notebook = ttk.Notebook(ventana)
+    notebook.pack(fill='both', expand=True)
 
-    frame_tabla = tk.Frame(ventana)
-    frame_tabla.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+    # Pestaña para el gráfico de barras
+    frame_barras = tk.Frame(notebook)
+    notebook.add(frame_barras, text="Gráfico de Barras")
+
+    # Pestaña para el gráfico de líneas
+    frame_lineas = tk.Frame(notebook)
+    notebook.add(frame_lineas, text="Gráfico de Líneas")
+
+    # === Gráfico de barras ===
+    # Frame para el gráfico de barras en la parte superior
+    frame_barras_grafico = tk.Frame(frame_barras)
+    frame_barras_grafico.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    # Frame para la tabla debajo del gráfico de barras
+    frame_barras_tabla = tk.Frame(frame_barras)
+    frame_barras_tabla.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
     # Crear el gráfico de barras
-    fig, ax = plt.subplots(figsize=(10, 6))
-
+    fig_barras, ax_barras = plt.subplots(figsize=(10, 6))
     metodos = [r[1] for r in resultados]
     tiempos = [r[3] for r in resultados]
 
-    # Cambiar color de las barras
+    # Colores para las barras
     colores = ['#FF5733', '#33FF57', '#3357FF', '#FF33A6', '#FF5733', '#33FFB5', '#FF8C33']
     colores = colores[:len(metodos)]  # Ajustar la lista de colores si hay más métodos que colores
 
-    ax.bar(metodos, tiempos, color=colores)
-    ax.set_title(f'Tiempo de Ejecución por Método de Ordenamiento - Columna: {columna_nombre}')
-    ax.set_ylabel('Tiempo (segundos)')
-    ax.set_xlabel('Métodos')
+    ax_barras.bar(metodos, tiempos, color=colores)
+    ax_barras.set_title(f'Tiempo de Ejecución por Método de Ordenamiento - Columna: {columna_nombre}')
+    ax_barras.set_ylabel('Tiempo (segundos)')
+    ax_barras.set_xlabel('Métodos')
 
-    canvas = FigureCanvasTkAgg(fig, master=frame_grafico)
-    canvas.draw()
-    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+    # Integrar el gráfico de barras a la pestaña
+    canvas_barras = FigureCanvasTkAgg(fig_barras, master=frame_barras_grafico)
+    canvas_barras.draw()
+    canvas_barras.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-    # Crear la tabla con Treeview
+    # Crear la tabla debajo del gráfico de barras
+    crear_tabla(frame_barras_tabla, resultados)
+
+    # === Gráfico de líneas ===
+    # Frame para el gráfico de líneas en la parte superior
+    frame_lineas_grafico = tk.Frame(frame_lineas)
+    frame_lineas_grafico.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    # Frame para la tabla debajo del gráfico de líneas
+    frame_lineas_tabla = tk.Frame(frame_lineas)
+    frame_lineas_tabla.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+
+    # Crear el gráfico de líneas
+    fig_lineas, ax_lineas = plt.subplots(figsize=(10, 6))
+
+    ax_lineas.plot(metodos, tiempos, marker='o', linestyle='-', color='b')
+    ax_lineas.set_title(f'Tiempo de Ejecución por Método - Gráfico de Líneas- Columna: {columna_nombre}')
+    ax_lineas.set_ylabel('Tiempo (segundos)')
+    ax_lineas.set_xlabel('Métodos')
+
+    # Mostrar tiempo total de ejecución debajo del gráfico de líneas
+   # tiempo_total = sum(tiempos)
+   # ax_lineas.text(0.5, -0.15, f'Tiempo total de ejecución: {tiempo_total:.4f} segundos',
+    #               transform=ax_lineas.transAxes, ha='center', fontsize=10)
+
+    # Integrar el gráfico de líneas a la pestaña
+    canvas_lineas = FigureCanvasTkAgg(fig_lineas, master=frame_lineas_grafico)
+    canvas_lineas.draw()
+    canvas_lineas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    # Crear la tabla debajo del gráfico de líneas
+    crear_tabla(frame_lineas_tabla, resultados)
+
+    ventana.mainloop()
+
+# Función para crear una tabla en un frame
+def crear_tabla(frame, resultados):
     columnas = ("columna", "metodo", "elementos", "tiempo")
-    tabla = ttk.Treeview(frame_tabla, columns=columnas, show='headings')
+    tabla = ttk.Treeview(frame, columns=columnas, show='headings')
 
     # Definir los encabezados
     tabla.heading("columna", text="Columna evaluada")
@@ -159,11 +211,11 @@ def mostrar_graficos(resultados, columna_nombre):
     tabla.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # Agregar scrollbar
-    scrollbar = ttk.Scrollbar(frame_tabla, orient="vertical", command=tabla.yview)
+    scrollbar = ttk.Scrollbar(frame, orient="vertical", command=tabla.yview)
     tabla.configure(yscroll=scrollbar.set)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    ventana.mainloop()
+
 
 # Función principal
 with open(ruta_csv, mode='r', newline='', encoding='utf-8-sig') as archivo:
