@@ -15,7 +15,7 @@ DANE                                                  No se encuentran resultado
 ENGINEERING SOURCE                                    397    Utilizada TERMINADA
 ICONTEC                                               No se encuentran resultados al realizar la busqueda 
                                                       computational thinking, ya que solo tiene normas tecnicas Collombianas
-IEEE (Institute of Electrical and Electronics Engineers) - (DESCUBRIDOR)    4.194 Utilizada TERMINADA 
+IEEE (Institute of Electrical and Electronics Engineers) - (DESCUBRIDOR)    4.193 Utilizada TERMINADA 
 J-GATE (Multidisciplinaria)                           Al ingresar a la pagina sale con error
 JSTOR (DESCUBRIDOR)                                   No se tuvo en cuenta debido que no permite 
                                                       exportar en formato CSV, al descargarla y hacer la conversion a formato CSV hay una fuga de información demasiado alta como para usarla
@@ -58,7 +58,7 @@ Bases de datos completas:
 ACADEMIC SEARCH ULTIMATE (DESCUBRIDOR)          1.125
 APPLIED SCIENCE & TECHNOLOGY SOURCE ULTIMATE    680
 ENGINEERING_SOURCE                              397
-IEEE                                            4.194
+IEEE                                            4.193
 SCOPUS                                          10.150
 
-TOTAL DE DATOS A TRABAJAR:                      16.546
+TOTAL DE DATOS A TRABAJAR:                      16.545

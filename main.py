@@ -94,13 +94,24 @@ def unir_data(nombre_archivo, directory_path_csv):
     time.sleep(3)  # Simulación del proceso de unificación
 
 def main():
+
+
     # Cargar los datos desde el archivo CSV
     directory_path_csv = os.getenv('DIRECTORY_CSV')  # Ruta de los CSV desde el .env
     nombre_documento_unido = os.getenv('NAME_DATA')  # Nombre del archivo unido desde el .env
+
     file_path = os.getenv('FILE_PATCH')  # Ruta del archivo para análisis desde el .env
 
-    # Unir data si es necesario
-    unir_data(nombre_documento_unido, directory_path_csv)
+    existeArchivo = verificar_existencia_data(directory_path_csv,nombre_documento_unido) #Llamada al metodo para verificar si se encuentra el archivo con la data unida
+
+    if existeArchivo:
+        print("Los datos ya se encuentra unidos\n")
+    else:
+        unir_data(nombre_documento_unido,directory_path_csv)#LLamado al metodo para unir toda la data en una sola
+
+
+    # Unir data si es necesario 
+    # unir_data(nombre_documento_unido, directory_path_csv)
 
     # Cargar los datos
     df = load_data(file_path)
@@ -137,6 +148,15 @@ def main():
 
     # Ejecutar el bucle principal de tkinter
     root.mainloop()
+
+
+def verificar_existencia_data(directory_path_csv,nombre_documento_unido):
+    # Combina la ruta de la carpeta con el nombre del archivo
+    ruta_completa = os.path.join(directory_path_csv, nombre_documento_unido)
+
+    # Verifica si el archivo existe y devuelve el boleano con el resultado
+    return os.path.isfile(ruta_completa)
+
 
 if __name__ == "__main__":
     main()
