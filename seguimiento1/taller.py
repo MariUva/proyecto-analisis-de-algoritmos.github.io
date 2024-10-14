@@ -13,7 +13,7 @@ from MetodosDeOrdenamiento import MetodosDeOrdenamiento
 sys.setrecursionlimit(10000)  # Puedes ajustar este número según sea necesario
 
 # Ruta al archivo CSV
-ruta_csv = './data/bases_datos/data_unido.csv'
+ruta_csv = '../data/bases_datos/data_unido.csv'
 
 # Instancia de la clase MetodosDeOrdenamiento
 metodos = MetodosDeOrdenamiento()
@@ -28,6 +28,7 @@ metodos_texto = [
     metodos.bitonic_sort,
     metodos.gnome_sort,
     metodos.binary_insertion_sort
+    
 ]
 
 metodos_numericos = [
@@ -55,7 +56,12 @@ def extraer_numero(valor):
         return int(match.group())  # Retorna el número encontrado como entero
     return None  # Si no se encuentra número, retornar None
 
-# Función para analizar la columna seleccionada
+#Convierte los valores deaciuerdo a la tabla ascci para ejecuttar los metodos de ordenamiento sin prtoblemasx
+def convertir_a_ascii(cadena):
+    """Convierte una cadena en una lista de valores ASCII."""
+    return [ord(char) for char in cadena]
+
+
 def analizar_columna(columna_elegida, columna_nombre, archivo):
     resultados = []
 
@@ -71,7 +77,7 @@ def analizar_columna(columna_elegida, columna_nombre, archivo):
 
         # Si es la columna 'Author', tomar solo el primer autor
         if columna_nombre == 'Author' and valor_celda != 'N/A':
-            primer_autor = valor_celda.split(',')[0].strip()
+            primer_autor = valor_celda.split(';')[0].strip()
             array_column.append(primer_autor)
 
         # Si es una columna numérica, convertir el valor a entero
@@ -83,7 +89,6 @@ def analizar_columna(columna_elegida, columna_nombre, archivo):
                 array_column.append(numero_extraido)
             else:
                 continue
-
         else:
             array_column.append(valor_celda)
 
@@ -92,15 +97,25 @@ def analizar_columna(columna_elegida, columna_nombre, archivo):
         array_column = [x for x in array_column if isinstance(x, int)]
         metodos_ordenamiento = metodos_numericos
     else:
-        metodos_ordenamiento = metodos_texto
+        # Convertir cadenas a valores ASCII
+        array_column_ascii = [sum(convertir_a_ascii(x)) for x in array_column]
+
+        # Usar los métodos numéricos ya que las cadenas ahora son números
+        metodos_ordenamiento = metodos_numericos
 
     # Aplicar cada método de ordenamiento y medir el tiempo
     for metodo_ordenamiento in metodos_ordenamiento:
         inicio_tiempo = time.time()
-        array_ordenado = metodo_ordenamiento(array_column[:])  # Crear una copia para cada ordenamiento
+
+        # Aplicar el método de ordenamiento sobre la columna convertida a ASCII
+        array_ordenado = metodo_ordenamiento(array_column_ascii[:])  # Crear una copia para cada ordenamiento
+
         fin_tiempo = time.time()
         tiempo_total = fin_tiempo - inicio_tiempo
-        resultados.append((columna_nombre, metodo_ordenamiento.__name__, len(array_column), tiempo_total))
+
+        print(tiempo_total)#Imprime el tiempo de ejecucion d ecada uno
+
+        resultados.append((columna_nombre, metodo_ordenamiento.__name__, len(array_column_ascii), tiempo_total))
 
     return resultados
 
@@ -223,6 +238,7 @@ with open(ruta_csv, mode='r', newline='', encoding='utf-8-sig') as archivo:
 
         # Guardar los nombres de las columnas
         columnas = [nombre_col.strip() for nombre_col in lector_csv.fieldnames]
+        print (columnas)
 
         # Mostrar columnas disponibles
         print("Columnas disponibles:")
