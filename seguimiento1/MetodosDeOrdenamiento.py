@@ -2,6 +2,7 @@ class MetodosDeOrdenamiento:
     # 1. TimSort (O(n log n) en el mejor y peor caso)
     def tim_sort(self, arr):
         arr.sort()
+        print(arr)
         return arr
 
     # 2. Comb Sort (O(n^2) en el peor caso, O(n log n) en el mejor caso)
@@ -221,3 +222,7 @@ class MetodosDeOrdenamiento:
             exp *= 10
 
         return arr
+    
+
+
+        

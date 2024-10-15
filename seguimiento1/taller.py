@@ -97,11 +97,15 @@ def analizar_columna(columna_elegida, columna_nombre, archivo):
         array_column = [x for x in array_column if isinstance(x, int)]
         metodos_ordenamiento = metodos_numericos
     else:
-        # Convertir cadenas a valores ASCII
-        array_column_ascii = [sum(convertir_a_ascii(x)) for x in array_column]
 
-        # Usar los métodos numéricos ya que las cadenas ahora son números
-        metodos_ordenamiento = metodos_numericos
+        if columna_nombre == 'Author':
+            # Convertir cadenas a valores ASCII
+            array_column_ascii = [sum(convertir_a_ascii(x)) for x in array_column]
+            # Usar los métodos numéricos ya que las cadenas ahora son números
+            metodos_ordenamiento = metodos_numericos
+        else:
+
+            metodos_ordenamiento = metodos_texto
 
     # Aplicar cada método de ordenamiento y medir el tiempo
     for metodo_ordenamiento in metodos_ordenamiento:
