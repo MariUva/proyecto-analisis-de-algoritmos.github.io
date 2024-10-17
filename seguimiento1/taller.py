@@ -13,7 +13,7 @@ from MetodosDeOrdenamiento import MetodosDeOrdenamiento
 sys.setrecursionlimit(10000)  # Puedes ajustar este número según sea necesario
 
 # Ruta al archivo CSV
-ruta_csv = '../data/bases_datos/data_unido.csv'
+ruta_csv = './data/bases_datos/data_unido.csv'
 
 # Instancia de la clase MetodosDeOrdenamiento
 metodos = MetodosDeOrdenamiento()
@@ -73,12 +73,16 @@ def analizar_columna(columna_elegida, columna_nombre, archivo):
     array_column = []
 
     for fila in lector_csv:
-        valor_celda = fila[columna_nombre].strip() if fila[columna_nombre] else 'N/A'
+        valor_celda = fila.get(columna_nombre, '').strip()  # Obtener el valor de la celda, o una cadena vacía si no está presente
 
-        # Si es la columna 'Author', tomar solo el primer autor
-        if columna_nombre == 'Author' and valor_celda != 'N/A':
-            primer_autor = valor_celda.split(';')[0].strip()
-            array_column.append(primer_autor)
+        # Si es la columna 'Author', tomar solo el primer autor, si está presente
+        if columna_nombre == 'Author':
+            if valor_celda not in ['N/A', None, '', 'NULL']:  # Verificar si el valor no es vacío o nulo
+                primer_autor = valor_celda.split(';')[0].strip()  # Tomar solo el primer autor
+                if primer_autor:  # Solo agregar si no está vacío
+                    array_column.append(primer_autor)
+            else:
+                continue  # Si está vacío o nulo, saltar esta fila
 
         # Si es una columna numérica, convertir el valor a entero
         elif columna_nombre in columnas_numericas and valor_celda != 'N/A':
@@ -90,21 +94,20 @@ def analizar_columna(columna_elegida, columna_nombre, archivo):
             else:
                 continue
         else:
-            array_column.append(valor_celda)
+            if valor_celda not in ['N/A', None, '', 'NULL']:  # Verificar si no está vacío
+                array_column.append(valor_celda)
 
     # Filtrar solo valores numéricos en columnas numéricas
     if columna_nombre in columnas_numericas:
         array_column = [x for x in array_column if isinstance(x, int)]
         metodos_ordenamiento = metodos_numericos
     else:
-
         if columna_nombre == 'Author':
             # Convertir cadenas a valores ASCII
-            array_column_ascii = [sum(convertir_a_ascii(x)) for x in array_column]
+            array_column = [sum(convertir_a_ascii(x)) for x in array_column]
             # Usar los métodos numéricos ya que las cadenas ahora son números
             metodos_ordenamiento = metodos_numericos
         else:
-
             metodos_ordenamiento = metodos_texto
 
     # Aplicar cada método de ordenamiento y medir el tiempo
@@ -112,16 +115,17 @@ def analizar_columna(columna_elegida, columna_nombre, archivo):
         inicio_tiempo = time.time()
 
         # Aplicar el método de ordenamiento sobre la columna convertida a ASCII
-        array_ordenado = metodo_ordenamiento(array_column_ascii[:])  # Crear una copia para cada ordenamiento
+        array_ordenado = metodo_ordenamiento(array_column[:])  # Crear una copia para cada ordenamiento
 
         fin_tiempo = time.time()
         tiempo_total = fin_tiempo - inicio_tiempo
 
-        print(tiempo_total)#Imprime el tiempo de ejecucion d ecada uno
+        print(tiempo_total)  # Imprime el tiempo de ejecucion de cada uno
 
-        resultados.append((columna_nombre, metodo_ordenamiento.__name__, len(array_column_ascii), tiempo_total))
+        resultados.append((columna_nombre, metodo_ordenamiento.__name__, len(array_column), tiempo_total))
 
     return resultados
+
 
 # Función para mostrar gráficos en Tkinter
 # Función para mostrar gráficos en Tkinter en pestañas separadas
