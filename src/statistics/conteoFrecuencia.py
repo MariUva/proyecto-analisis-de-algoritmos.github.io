@@ -256,3 +256,4 @@ def generar_nube_palabras_frecuencia(conteo_total):
     plt.axis("off")
     plt.show()
 
+

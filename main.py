@@ -172,6 +172,5 @@ def verificar_existencia_data(directory_path_csv,nombre_documento_unido):
     # Verifica si el archivo existe y devuelve el boleano con el resultado
     return os.path.isfile(ruta_completa)
 
-
 if __name__ == "__main__":
     main()
