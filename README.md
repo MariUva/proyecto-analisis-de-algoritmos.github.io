@@ -2,6 +2,8 @@ NOTA: La descarga de las bases de datos se realizo el 28/09/2024 hasta ese día 
 
 INFORMACIÓN BASES DE DATOS
 
+TOTAL DE BASES DE DATOS 20 
+
 ACADEMIC SEARCH ULTIMATE (DESCUBRIDOR)                1.125      Utilizada TERMINADA
 ACCESS ENGINEERING                                    No se tuvo en cuenta ya que solo tiene 240 libros y 3 
                                                       videos, y los libros no se dejan exportar en ningun formato
@@ -32,6 +34,7 @@ SCOPUS - Consorcio Colombia                           10.150      Utilizada TERM
 SPRINGER - Consorcio Colombia - (DESCUBRIDOR)         No permite realizar descargas
 TAYLOR & FRANCIS - Consorcio Colombia - (DESCUBRIDOR) Son 232.451 y solo permitio descargar 2.000 Utilizada TERMINADA
 
+TOTAL DE BASES DE DATOS UTILIZADAS 6
 
 Unificación: 
 
@@ -52,6 +55,8 @@ Los parametros que se van a tener en cuenta para este proyecto son: DOI,Publishe
 NOTA: Taylor and Francis search results (25 September 2024) fue descarta debido a que no tenia la suficiente información para ser unificada a las demas, por ejemplo: No tiene Publisher, abstract ni ISSN.
 
 NOTA: Para la union de las bases de datos se creo un codigo que une los archivos CSV y de una vez elimina las columnas que no seran utilizadas 
+
+TOTAL DE BASES DE DATOS SELECCIONADAS Y UNIFICADAS 5
 
 Bases de datos completas:  
 

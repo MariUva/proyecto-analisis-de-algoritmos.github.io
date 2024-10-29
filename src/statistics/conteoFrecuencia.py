@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.style as style
+from wordcloud import WordCloud
 
 
 # Ruta al archivo CSV
@@ -224,9 +225,34 @@ def crear_ventana_con_pestanas(conteo_total):
     # Agregar la pestaña de totales
     agregar_pestana_totales(tab_control, conteo_total)
 
+
+    # Botón para generar la nube de palabras
+    button_nube = ttk.Button(ventana, text="Generar Nube de Palabras", command=lambda: generar_nube_palabras_frecuencia(conteo_total))
+    button_nube.pack(pady=10)
+
+
     ventana.protocol("WM_DELETE_WINDOW", ventana.destroy)
 
 # Función para abrir la ventana desde el botón
 def mostrar_graficos():
     conteo_total = analizar_abstracts(ruta_csv)
     crear_ventana_con_pestanas(conteo_total)
+
+
+# Función para generar una nube de palabras a partir del conteo de frecuencia
+def generar_nube_palabras_frecuencia(conteo_total):
+    # Convierte el conteo de frecuencia en un diccionario compatible con WordCloud
+    frecuencias = {}
+    for categoria, variables in conteo_total.items():
+        for variable, conteo in variables.items():
+            frecuencias[variable] = conteo
+
+    # Genera la nube de palabras
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(frecuencias)
+
+    # Mostrar la nube de palabras
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.show()
+

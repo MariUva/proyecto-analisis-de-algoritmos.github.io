@@ -9,6 +9,9 @@ from tkinter import messagebox
 import os
 import time
 from dotenv import load_dotenv
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+
 
 # Carga las variables de entorno desde el archivo .env
 load_dotenv()
@@ -84,7 +87,18 @@ def realizar_analisis(tipo_analisis, df):
        conteo_total = analizar_abstracts('data/bases_datos/data_unido.csv')  # Llama a la función para obtener el conteo
        crear_ventana_con_pestanas(conteo_total)  # Muestra la ventana con los gráficos
         
-        #analizar_abstracts('data/APPLIED AND ENGINEERING.csv')
+
+    elif tipo_analisis == "Nube de Palabras Abstract":
+        generar_nube_palabras(df) 
+
+def generar_nube_palabras(df):
+    abstracts = " ".join(df['abstract'].dropna())  # Suponiendo que la columna de abstracts se llama 'abstract'
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(abstracts)
+    
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.show()     #analizar_abstracts('data/APPLIED AND ENGINEERING.csv')
         #messagebox.showinfo("Análisis de Abstracts", "Análisis de abstracts completado.")
 
 def unir_data(nombre_archivo, directory_path_csv):
@@ -134,6 +148,7 @@ def main():
     combo = ttk.Combobox(root, values=options)
     combo.set("Seleccione un análisis")
     combo.pack(pady=10)
+
 
     # Crear el botón para iniciar el análisis
     def iniciar_analisis():

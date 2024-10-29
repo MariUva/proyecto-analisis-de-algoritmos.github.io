@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from MetodosDeOrdenamiento import MetodosDeOrdenamiento
 
 # Aumentar el límite de recursión
-sys.setrecursionlimit(10000)  # Puedes ajustar este número según sea necesario
+sys.setrecursionlimit(10000)  
 
 # Ruta al archivo CSV
 ruta_csv = './data/bases_datos/data_unido.csv'
