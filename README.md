@@ -67,3 +67,11 @@ IEEE                                            4.193
 SCOPUS                                          10.150
 
 TOTAL DE DATOS A TRABAJAR:                      16.545
+
+
+Requisito #5
+
+Para pais y numero de citas se utilizo la función random para que diera de manera aleatoria un array con 19 pais y un valor de numero de citas entre 1 y mil
+
+Los paises que se tuvieron en cuenta son: Colombia, México, Argentina, Chile, Inglaterra, Brasil, China,
+                                          Usa, España, Francia, Alemania, Rusia,  Portugal, India, Ucrania, Afganistan, Nicaragua, Filipinas, Egipto
