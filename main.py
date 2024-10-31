@@ -11,6 +11,7 @@ import time
 from dotenv import load_dotenv
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import networkx as nx
 
 
 # Carga las variables de entorno desde el archivo .env
@@ -90,6 +91,15 @@ def realizar_analisis(tipo_analisis, df):
 
     elif tipo_analisis == "Nube de Palabras Abstract":
         generar_nube_palabras(df) 
+    
+    
+    elif tipo_analisis == "Analisis de ISSN":
+        # Ejecutar la función de gráfico de nodos y aristas para ISSN
+        valores_mas_frecuentes = df.iloc[:, 8].value_counts().head(10)
+        graficar_nodos_aristas(valores_mas_frecuentes, df)
+        messagebox.showinfo("Análisis de ISSN", "El análisis de ISSN se ha completado y el gráfico se ha generado.")
+
+
 
 def generar_nube_palabras(df):
     abstracts = " ".join(df['abstract'].dropna())  # Suponiendo que la columna de abstracts se llama 'abstract'
@@ -107,6 +117,49 @@ def unir_data(nombre_archivo, directory_path_csv):
     unificar_data(directory_path_csv, nombre_archivo)
     time.sleep(3)  # Simulación del proceso de unificación
 
+
+def graficar_nodos_aristas(valores_mas_frecuentes, df):
+    # Crear un gráfico de nodos y aristas
+    G = nx.Graph()
+    node_colors = []  # Lista para almacenar los colores de los nodos
+
+    for valor in valores_mas_frecuentes.index:
+        frecuencia = valores_mas_frecuentes[valor]
+        datos_filtrados = df[df.iloc[:, 8] == valor]
+        total_citas = datos_filtrados.iloc[:, 11].sum()
+        pais_frecuente = datos_filtrados.iloc[:, 10].mode()[0]
+
+        # Nodo ISSN (Azul claro) - solo añadir si no existe ya en el grafo
+        if valor not in G:
+            G.add_node(valor, label=valor)
+            node_colors.append("lightblue")
+
+        # Nodo país (Verde claro) - solo añadir si no existe ya en el grafo
+        if pais_frecuente not in G:
+            G.add_node(pais_frecuente, label=pais_frecuente)
+            node_colors.append("lightgreen")
+        G.add_edge(valor, pais_frecuente, label="País")
+
+        # Nodo citas (Rojo claro) - solo añadir si no existe ya en el grafo
+        cita_label = f"{total_citas} citas"
+        if cita_label not in G:
+            G.add_node(cita_label, label=cita_label)
+            node_colors.append("lightcoral")
+        G.add_edge(valor, cita_label, label="Citas")
+
+    # Aumentar espacio entre nodos usando k en spring_layout
+    pos = nx.spring_layout(G, seed=42, k=0.5)  # Ajustar k para mayor separación
+
+    # Dibujar el gráfico
+    plt.figure(figsize=(12, 10))
+    nx.draw(G, pos, with_labels=True, node_size=3000, node_color=node_colors,
+            font_size=10, font_weight="bold", edge_color="gray")
+    nx.draw_networkx_edge_labels(G, pos, edge_labels={(u, v): d['label'] for u, v, d in G.edges(data=True)}, font_size=8)
+    plt.title("Gráfico de Nodos y Aristas: Valores Frecuentes, País y Citas")
+    plt.show()
+
+
+
 def main():
 
 
@@ -122,6 +175,7 @@ def main():
         print("Los datos ya se encuentra unidos\n")
     else:
         unir_data(nombre_documento_unido,directory_path_csv)#LLamado al metodo para unir toda la data en una sola
+    
 
 
     # Unir data si es necesario 
@@ -129,6 +183,30 @@ def main():
 
     # Cargar los datos
     df = load_data(file_path)
+    
+     # Imprimir el contenido de la columna en la posición 8
+    print("Contenido de la columna 8:")
+    print(df.iloc[:, 8])
+
+   # Encontrar los 10 valores más frecuentes en la columna 8
+    valores_mas_frecuentes = df.iloc[:, 8].value_counts().head(10)
+    print("Los 10 valores más frecuentes en la columna 8, con sus repeticiones, citas y país correspondiente:")
+
+    # Recorrer los valores más frecuentes y extraer la información de citas y país correspondiente
+    for valor in valores_mas_frecuentes.index:
+        frecuencia = valores_mas_frecuentes[valor]
+        
+        # Filtrar el DataFrame para obtener las filas que corresponden a cada valor frecuente
+        datos_filtrados = df[df.iloc[:, 8] == valor]
+
+        # Obtener la suma de citas para este valor (columna 11)
+        total_citas = datos_filtrados.iloc[:, 11].sum()
+
+        # Obtener el país más frecuente para este valor (columna 10)
+        pais_frecuente = datos_filtrados.iloc[:, 10].mode()[0]
+
+        print(f"{valor}: {frecuencia} veces, Citas: {total_citas}, País: {pais_frecuente}")
+
 
     # Crear la ventana principal con Tkinter
     root = tk.Tk()
@@ -144,7 +222,7 @@ def main():
     label.pack(pady=10)
 
     # Crear el combobox para seleccionar el tipo de análisis
-    options = ["Análisis Unidimensional", "Análisis Bidimensional", "Análisis de Abstracts"]
+    options = ["Análisis Unidimensional", "Análisis Bidimensional", "Análisis de Abstracts", "Analisis de ISSN"]
     combo = ttk.Combobox(root, values=options)
     combo.set("Seleccione un análisis")
     combo.pack(pady=10)
