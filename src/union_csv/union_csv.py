@@ -54,11 +54,18 @@ def limpiar_columnas_csv(directory_path_csv):
 '''
 Metodo que se encarga de unir toda la data en un solo archivo
 '''
-def unificar_data(directory_path_csv,nombre_csv_final):
+import os
+import pandas as pd
+import random
 
+import os
+import pandas as pd
+import random
+
+def unificar_data(directory_path_csv, nombre_csv_final):
     # Lista para almacenar los dataframes de cada archivo CSV
     dataframes = []
-    
+
     # Recorre todos los archivos en la carpeta
     for archivo in os.listdir(directory_path_csv):
         if archivo.endswith('.csv'):  # Verificar que sea un archivo CSV
@@ -66,13 +73,23 @@ def unificar_data(directory_path_csv,nombre_csv_final):
             # Leer el archivo CSV y agregarlo a la lista
             df = pd.read_csv(ruta_archivo)
             dataframes.append(df)
-    
-    
+
     # Concatenar todos los dataframes en uno solo
     df_final = pd.concat(dataframes, ignore_index=True)
 
-    ruta_completa = os.path.join(directory_path_csv, nombre_csv_final)  # Ruta completa donde guardar
+    # Lista de países aleatorios
+    paises = ["Colombia", "México", "Argentina", "Chile", "Inglaterra", "Brasil", "China", "Usa", "España", "Francia", "Alemania", "Rusia",  "Portugal",
+               "India", "Ucrania", "Afganistan", "Nicaragua", "Filipinas", "Egipto"]
+
+    # Agregar las columnas 'pais' y 'numero_citas' al final
+    df_final['Country'] = [random.choice(paises) for _ in range(len(df_final))]
+    df_final['Number of citation'] = [random.randint(1, 1000) for _ in range(len(df_final))]
+
+    # Guardar el dataframe final en el archivo de salida
+    ruta_completa = os.path.join(directory_path_csv, nombre_csv_final)
     df_final.to_csv(ruta_completa, index=False)
+
+
 
 '''
 Metodo el cual crea el diccionario para filtrar columnas'''
@@ -88,7 +105,9 @@ def crear_diccionario():
         "Issue": ["Issue"],
         "Publisher": ["Publisher"],
         "Abstract": ["Abstract"],
-        "ISSN": ["ISSN"]
+        "ISSN": ["ISSN"],
+        "Pais": ["Pais"],
+        "Numero de citas":["Numero de citas"]
     }
     return nombres_columnas
 

@@ -16,7 +16,9 @@ def load_data(file_path):  # Define una función llamada 'load_data' que toma co
         'Abstract',  # Resumen del artículo.
         'Title',#Titulo
         'Publication Title',#Titulo de publicacioón
-        'Year'#Ano de publicacion
+        'Year',#Ano de publicacion
+        'Pais',#Pais de origen del autor
+        'Numero de citas'# Numero de citas que tiene
     ]
     
     # Verificar valores faltantes
