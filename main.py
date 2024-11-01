@@ -95,7 +95,7 @@ def realizar_analisis(tipo_analisis, df):
     
     elif tipo_analisis == "Analisis de ISSN":
         # Ejecutar la función de gráfico de nodos y aristas para ISSN
-        valores_mas_frecuentes = df.iloc[:, 8].value_counts().head(10)
+        valores_mas_frecuentes = df.iloc[:, 4].value_counts().head(10)
         graficar_nodos_aristas(valores_mas_frecuentes, df)
         messagebox.showinfo("Análisis de ISSN", "El análisis de ISSN se ha completado y el gráfico se ha generado.")
 
@@ -125,7 +125,7 @@ def graficar_nodos_aristas(valores_mas_frecuentes, df):
 
     for valor in valores_mas_frecuentes.index:
         frecuencia = valores_mas_frecuentes[valor]
-        datos_filtrados = df[df.iloc[:, 8] == valor]
+        datos_filtrados = df[df.iloc[:, 4] == valor]
         total_citas = datos_filtrados.iloc[:, 11].sum()
         pais_frecuente = datos_filtrados.iloc[:, 10].mode()[0]
 
@@ -184,20 +184,20 @@ def main():
     # Cargar los datos
     df = load_data(file_path)
     
-     # Imprimir el contenido de la columna en la posición 8
-    print("Contenido de la columna 8:")
-    print(df.iloc[:, 8])
+     # Imprimir el contenido de la columna en la posición 4
+    print("Contenido de la columna 4:")
+    print(df.iloc[:, 4])
 
-   # Encontrar los 10 valores más frecuentes en la columna 8
-    valores_mas_frecuentes = df.iloc[:, 8].value_counts().head(10)
-    print("Los 10 valores más frecuentes en la columna 8, con sus repeticiones, citas y país correspondiente:")
+   # Encontrar los 10 valores más frecuentes en la columna 4
+    valores_mas_frecuentes = df.iloc[:, 4].value_counts().head(10)
+    print("Los 10 valores más frecuentes en la columna 4, con sus repeticiones, citas y país correspondiente:")
 
     # Recorrer los valores más frecuentes y extraer la información de citas y país correspondiente
     for valor in valores_mas_frecuentes.index:
         frecuencia = valores_mas_frecuentes[valor]
         
         # Filtrar el DataFrame para obtener las filas que corresponden a cada valor frecuente
-        datos_filtrados = df[df.iloc[:, 8] == valor]
+        datos_filtrados = df[df.iloc[:, 4] == valor]
 
         # Obtener la suma de citas para este valor (columna 11)
         total_citas = datos_filtrados.iloc[:, 11].sum()
