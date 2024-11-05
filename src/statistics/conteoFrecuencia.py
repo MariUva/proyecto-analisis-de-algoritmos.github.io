@@ -1,14 +1,10 @@
-import csv
-import matplotlib.pyplot as plt
 from collections import defaultdict
 import re
-import tkinter as tk
-from tkinter import ttk, messagebox
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import matplotlib.style as style
 from wordcloud import WordCloud
+import os
+from io import BytesIO
 
-
+app = Flask(__name__)
 # Ruta al archivo CSV
 #ruta_csv = r'./data/APPLIED AND ENGINEERING.csv'
 
@@ -118,7 +114,8 @@ categorias = {
         "Mimo": ["Mimo"]
 }
 }
-# Función para contar frecuencias
+
+# Función para contar frecuencias (sin cambios)
 def contar_frecuencias(abstract, categorias):
     frecuencias = defaultdict(int)
     abstract = abstract.lower()
@@ -136,9 +133,9 @@ def contar_frecuencias(abstract, categorias):
 
 # Función para analizar abstracts
 def analizar_abstracts(file_path):
+    conteo_total = defaultdict(lambda: defaultdict(int))
     with open(file_path, mode='r', newline='', encoding='utf-8-sig') as archivo:
         lector_csv = csv.DictReader(archivo)
-        conteo_total = defaultdict(lambda: defaultdict(int))
         
         for fila in lector_csv:
             resumen = fila.get("Abstract", "")
@@ -150,110 +147,70 @@ def analizar_abstracts(file_path):
                             conteo_total[categoria][variable] += conteo
     return conteo_total
 
-# Función para agregar gráfico en pestaña
-def agregar_grafico_pestana(tab_control, nombre_categoria, conteo):
-    tab = ttk.Frame(tab_control)
-    tab_control.add(tab, text=nombre_categoria)
+# Ruta para mostrar los gráficos de frecuencia
+@app.route('/')
+def index():
+    return render_template('index.html')
 
+# Generar gráficos para cada categoría y retornar la imagen
+@app.route('/graficos/<categoria>')
+def generar_grafico(categoria):
+    conteo_total = analizar_abstracts(ruta_csv)
+    conteo = conteo_total.get(categoria, {})
     variables = list(conteo.keys())
     frecuencias = list(conteo.values())
 
-    # Ajustar el tamaño de la figura en función del número de variables
-    ancho_figura = 5 + len(variables) * 1.5
-    ancho_figura = min(ancho_figura, 15)
-    
-    fig, ax = plt.subplots(figsize=(ancho_figura, 5))
-    
-    bars = ax.bar(variables, frecuencias, color='skyblue')
-    ax.set_title(f'Frecuencia de Aparición - {nombre_categoria}')
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(variables, frecuencias, color='skyblue')
+    ax.set_title(f'Frecuencia de Aparición - {categoria}')
     ax.set_xlabel('Variables')
     ax.set_ylabel('Frecuencia')
     ax.tick_params(axis='x', rotation=45, labelsize=8)
 
-    # Mostrar los valores en cada barra
-    for bar in bars:
-        yval = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2, yval + 1, int(yval), ha='center', va='bottom')
-
-    canvas = FigureCanvasTkAgg(fig, master=tab)
-    canvas.draw()
-    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-    # Cerrar la figura para evitar la ventana adicional
+    # Convertir el gráfico en una imagen para enviar al navegador
+    img = BytesIO()
+    fig.savefig(img, format='png')
+    img.seek(0)
     plt.close(fig)
+    return send_file(img, mimetype='image/png')
 
-# Función para agregar pestaña de totales
-def agregar_pestana_totales(tab_control, conteo_total):
-    tab_totales = ttk.Frame(tab_control)
-    tab_control.add(tab_totales, text="Totales por Categoría")
-
-    fig, ax = plt.subplots(figsize=(8, 5))
+# Generar gráfico de totales por categoría
+@app.route('/totales')
+def graficar_totales():
+    conteo_total = analizar_abstracts(ruta_csv)
     categorias = list(conteo_total.keys())
     total_por_categoria = [sum(conteo.values()) for conteo in conteo_total.values()]
 
-    bars = ax.bar(categorias, total_por_categoria, color='lightgreen')
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(categorias, total_por_categoria, color='lightgreen')
     ax.set_title("Totales por Categoría")
     ax.set_xlabel("Categorías")
     ax.set_ylabel("Total Frecuencia")
     ax.tick_params(axis='x', rotation=45, labelsize=8)
 
-    # Mostrar los valores en cada barra
-    for bar in bars:
-        yval = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2, yval + 1, int(yval), ha='center', va='bottom')
-
-    canvas = FigureCanvasTkAgg(fig, master=tab_totales)
-    canvas.draw()
-    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-    # Cerrar la figura para evitar la ventana adicional
+    # Convertir el gráfico en una imagen para enviar al navegador
+    img = BytesIO()
+    fig.savefig(img, format='png')
+    img.seek(0)
     plt.close(fig)
+    return send_file(img, mimetype='image/png')
 
-# Función para crear ventana con pestañas
-def crear_ventana_con_pestanas(conteo_total):
-    ventana = tk.Toplevel()
-    ventana.title("Gráficos por Categoría")
-    ventana.geometry('900x600')
-
-    tab_control = ttk.Notebook(ventana)
-    tab_control.pack(expand=1, fill="both")
-
-    # Agregar gráficos en cada pestaña
-    for categoria, conteo in conteo_total.items():
-        agregar_grafico_pestana(tab_control, categoria, conteo)
-
-    # Agregar la pestaña de totales
-    agregar_pestana_totales(tab_control, conteo_total)
-
-
-    # Botón para generar la nube de palabras
-    button_nube = ttk.Button(ventana, text="Generar Nube de Palabras", command=lambda: generar_nube_palabras_frecuencia(conteo_total))
-    button_nube.pack(pady=10)
-
-
-    ventana.protocol("WM_DELETE_WINDOW", ventana.destroy)
-
-# Función para abrir la ventana desde el botón
-def mostrar_graficos():
+# Generar una nube de palabras
+@app.route('/nube_palabras')
+def generar_nube_palabras():
     conteo_total = analizar_abstracts(ruta_csv)
-    crear_ventana_con_pestanas(conteo_total)
-
-
-# Función para generar una nube de palabras a partir del conteo de frecuencia
-def generar_nube_palabras_frecuencia(conteo_total):
-    # Convierte el conteo de frecuencia en un diccionario compatible con WordCloud
     frecuencias = {}
     for categoria, variables in conteo_total.items():
         for variable, conteo in variables.items():
             frecuencias[variable] = conteo
 
-    # Genera la nube de palabras
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(frecuencias)
 
-    # Mostrar la nube de palabras
-    plt.figure(figsize=(10, 5))
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis("off")
-    plt.show()
+    # Convertir la nube de palabras en una imagen para enviar al navegador
+    img = BytesIO()
+    wordcloud.to_image().save(img, format='PNG')
+    img.seek(0)
+    return send_file(img, mimetype='image/png')
 
-
+if __name__ == "__main__":
+    app.run(debug=True)

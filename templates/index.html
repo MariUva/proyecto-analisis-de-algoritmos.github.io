@@ -3,10 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Inicio</title>
+    <title>Inicio | Aplicación de Análisis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .nav-links, .category-links {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .nav-links li, .category-links li {
+            text-align: center;
+        }
+        .nav-links a, .category-links a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .nav-links a:hover, .category-links a:hover {
+            color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bienvenido a mi aplicación web</h1>
-    <p>Esta es una prueba de la aplicación Flask.</p>
+    <h1>Bienvenido a mi aplicación de análisis</h1>
+    <div class="container">
+        <p>Explora las distintas herramientas de análisis disponibles:</p>
+        
+        <!-- Enlaces principales de navegación -->
+        <ul class="nav-links">
+            <li><a href="{{ url_for('graficar_totales') }}">Ver Gráfico de Totales por Categoría</a></li>
+            <li><a href="{{ url_for('generar_nube_palabras') }}">Ver Nube de Palabras</a></li>
+        </ul>
+
+        <h2>Gráficos de Frecuencia por Categoría</h2>
+        <!-- Lista de categorías generada dinámicamente -->
+        <ul class="category-links">
+            {% for categoria in categorias %}
+                <li><a href="{{ url_for('generar_grafico', categoria=categoria) }}">{{ categoria }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>
