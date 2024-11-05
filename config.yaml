@@ -3,7 +3,6 @@ services:
     name: tu-app
     env: python
     region: oregon  
-    buildCommand:
-      - pip install pandas  
+    buildCommand: 
       - pip install -r requirements.txt  
     startCommand: python main.py 

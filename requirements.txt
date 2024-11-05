@@ -1,6 +1,6 @@
+flask
 pandas
 matplotlib
 wordcloud
-tk
 networkx
 python-dotenv
