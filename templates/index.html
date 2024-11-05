@@ -46,6 +46,31 @@
         .nav-links a:hover, .category-links a:hover {
             color: #0056b3;
         }
+        .analysis-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .analysis-form input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .analysis-form button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .analysis-form button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -59,6 +84,24 @@
             <li><a href="{{ url_for('mostrar_nube_palabras') }}">Ver Nube de Palabras</a></li>
             <li><a href="{{ url_for('graficar_nodos_aristas_route') }}">Ver Gráfico de Nodos y Aristas (ISSN)</a></li>
         </ul>
+
+        <!-- Formularios para análisis unidimensional y bidimensional -->
+        <div class="analysis-form">
+            <h2>Análisis Unidimensional</h2>
+            <form action="{{ url_for('analisis_unidimensional') }}" method="post">
+                <input type="text" name="columna" placeholder="Ingrese el nombre de la columna" required>
+                <button type="submit">Realizar Análisis Unidimensional</button>
+            </form>
+        </div>
+
+        <div class="analysis-form">
+            <h2>Análisis Bidimensional</h2>
+            <form action="{{ url_for('analisis_bidimensional') }}" method="post">
+                <input type="text" name="columna1" placeholder="Nombre de la primera columna" required>
+                <input type="text" name="columna2" placeholder="Nombre de la segunda columna" required>
+                <button type="submit">Realizar Análisis Bidimensional</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

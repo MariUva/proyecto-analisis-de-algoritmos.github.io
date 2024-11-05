@@ -6,7 +6,7 @@ from io import BytesIO
 from src.statistics.conteoFrecuencia import analizar_abstracts, generar_nube_palabras, ruta_csv
 from src.data.data_processing import load_data  # Asegúrate de tener esta importación
 import networkx as nx
-
+from src.statistics.statistics import descriptive_statistics
 
 
 # Carga las variables de entorno desde el archivo .env
@@ -22,6 +22,32 @@ ruta_csv = os.getenv("RUTA_CSV", "./data/bases_datos/data_unido.csv")
 def index():
     # Página principal con opciones de análisis
     return render_template('index.html')
+
+@app.route('/analisis_unidimensional', methods=['GET', 'POST'])
+def analisis_unidimensional():
+    if request.method == 'POST':
+        columna = request.form['columna']
+        df = load_data(ruta_csv)
+        if columna in df.columns:
+            resultado = descriptive_statistics(df, columna)
+            return render_template('resultado.html', resultado=resultado, tipo=f"Análisis Unidimensional para {columna}")
+        else:
+            return "Error: La columna especificada no existe en el archivo.", 400
+    return render_template('unidimensional.html')
+
+@app.route('/analisis_bidimensional', methods=['GET', 'POST'])
+def analisis_bidimensional():
+    if request.method == 'POST':
+        columna1 = request.form['columna1']
+        columna2 = request.form['columna2']
+        df = load_data(ruta_csv)
+        if columna1 in df.columns and columna2 in df.columns:
+            resultado = descriptive_statistics(df, columna1, columna2)
+            return render_template('resultado.html', resultado=resultado, tipo=f"Análisis Bidimensional para {columna1} y {columna2}")
+        else:
+            return "Error: Una o ambas columnas especificadas no existen en el archivo.", 400
+    return render_template('bidimensional.html')
+
 
 @app.route('/totales')
 def graficar_totales():
