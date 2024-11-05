@@ -175,7 +175,7 @@ def generar_grafico(categoria):
     plt.close(fig)
     return send_file(img, mimetype='image/png')
 
-@app.route('/totales')
+@app.route('/totales', endpoint='graficar_totales')
 def graficar_totales():
     conteo_total = analizar_abstracts(ruta_csv)
     categorias = list(conteo_total.keys())
