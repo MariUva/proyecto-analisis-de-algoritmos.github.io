@@ -3,7 +3,6 @@ services:
     name: tu-app
     env: python
     buildCommand: 
-      - pip install -r requirements.txt  # Si tienes un requirements.txt
-      # O puedes instalar pandas directamente:
-      - pip install pandas
+      - pip install pandas  # Instala pandas directamente
+      - poetry install  # O si usas Poetry, asegurarte que instale todas las dependencias
     startCommand: python main.py
