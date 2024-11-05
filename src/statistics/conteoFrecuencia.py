@@ -1,14 +1,11 @@
 from collections import defaultdict
 import csv
 import re
-from flask import Flask, render_template, send_file
 from matplotlib import pyplot as plt
 from wordcloud import WordCloud
-import os
 from io import BytesIO
 
 
-app = Flask(__name__)
 # Ruta al archivo CSV
 #ruta_csv = r'./data/APPLIED AND ENGINEERING.csv'
 
@@ -140,7 +137,6 @@ def analizar_abstracts(file_path):
     conteo_total = defaultdict(lambda: defaultdict(int))
     with open(file_path, mode='r', newline='', encoding='utf-8-sig') as archivo:
         lector_csv = csv.DictReader(archivo)
-        
         for fila in lector_csv:
             resumen = fila.get("Abstract", "")
             if resumen:
@@ -151,14 +147,8 @@ def analizar_abstracts(file_path):
                             conteo_total[categoria][variable] += conteo
     return conteo_total
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/graficos/<categoria>')
-def generar_grafico(categoria):
-    conteo_total = analizar_abstracts(ruta_csv)
-    conteo = conteo_total.get(categoria, {})
+# Funciones para generar gráficos
+def generar_grafico(categoria, conteo):
     variables = list(conteo.keys())
     frecuencias = list(conteo.values())
 
@@ -173,11 +163,9 @@ def generar_grafico(categoria):
     fig.savefig(img, format='png')
     img.seek(0)
     plt.close(fig)
-    return send_file(img, mimetype='image/png')
+    return img
 
-@app.route('/totales', endpoint='graficar_totales')
-def graficar_totales():
-    conteo_total = analizar_abstracts(ruta_csv)
+def graficar_totales(conteo_total):
     categorias = list(conteo_total.keys())
     total_por_categoria = [sum(conteo.values()) for conteo in conteo_total.values()]
 
@@ -192,22 +180,13 @@ def graficar_totales():
     fig.savefig(img, format='png')
     img.seek(0)
     plt.close(fig)
-    return send_file(img, mimetype='image/png')
+    return img
 
-@app.route('/nube_palabras')
-def generar_nube_palabras():
-    conteo_total = analizar_abstracts(ruta_csv)
-    frecuencias = {}
-    for categoria, variables in conteo_total.items():
-        for variable, conteo in variables.items():
-            frecuencias[variable] = conteo
-
+def generar_nube_palabras(conteo_total):
+    frecuencias = {variable: count for categoria, variables in conteo_total.items() for variable, count in variables.items()}
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(frecuencias)
 
     img = BytesIO()
     wordcloud.to_image().save(img, format='PNG')
     img.seek(0)
-    return send_file(img, mimetype='image/png')
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    return img

@@ -55,8 +55,10 @@
         
         <!-- Enlaces principales de navegación -->
         <ul class="nav-links">
-            <li><a href="{{ url_for('totales') }}">Ver Gráfico de Totales por Categoría</a></li>
-            <li><a href="{{ url_for('generar_nube_palabras') }}">Ver Nube de Palabras</a></li>
+            <!-- Enlace para ver el gráfico de totales -->
+            <li><a href="{{ url_for('graficar_totales') }}">Ver Gráfico de Totales por Categoría</a></li>
+            <!-- Enlace para ver la nube de palabras -->
+            <li><a href="{{ url_for('mostrar_nube_palabras') }}">Ver Nube de Palabras</a></li>
         </ul>
 
         <h2>Gráficos de Frecuencia por Categoría</h2>
