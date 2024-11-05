@@ -1,8 +1,12 @@
 from collections import defaultdict
+import csv
 import re
+from flask import Flask, render_template, send_file
+from matplotlib import pyplot as plt
 from wordcloud import WordCloud
 import os
 from io import BytesIO
+
 
 app = Flask(__name__)
 # Ruta al archivo CSV
@@ -115,7 +119,7 @@ categorias = {
 }
 }
 
-# Función para contar frecuencias (sin cambios)
+# Función para contar frecuencias
 def contar_frecuencias(abstract, categorias):
     frecuencias = defaultdict(int)
     abstract = abstract.lower()
@@ -147,12 +151,10 @@ def analizar_abstracts(file_path):
                             conteo_total[categoria][variable] += conteo
     return conteo_total
 
-# Ruta para mostrar los gráficos de frecuencia
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Generar gráficos para cada categoría y retornar la imagen
 @app.route('/graficos/<categoria>')
 def generar_grafico(categoria):
     conteo_total = analizar_abstracts(ruta_csv)
@@ -167,14 +169,12 @@ def generar_grafico(categoria):
     ax.set_ylabel('Frecuencia')
     ax.tick_params(axis='x', rotation=45, labelsize=8)
 
-    # Convertir el gráfico en una imagen para enviar al navegador
     img = BytesIO()
     fig.savefig(img, format='png')
     img.seek(0)
     plt.close(fig)
     return send_file(img, mimetype='image/png')
 
-# Generar gráfico de totales por categoría
 @app.route('/totales')
 def graficar_totales():
     conteo_total = analizar_abstracts(ruta_csv)
@@ -188,14 +188,12 @@ def graficar_totales():
     ax.set_ylabel("Total Frecuencia")
     ax.tick_params(axis='x', rotation=45, labelsize=8)
 
-    # Convertir el gráfico en una imagen para enviar al navegador
     img = BytesIO()
     fig.savefig(img, format='png')
     img.seek(0)
     plt.close(fig)
     return send_file(img, mimetype='image/png')
 
-# Generar una nube de palabras
 @app.route('/nube_palabras')
 def generar_nube_palabras():
     conteo_total = analizar_abstracts(ruta_csv)
@@ -206,7 +204,6 @@ def generar_nube_palabras():
 
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(frecuencias)
 
-    # Convertir la nube de palabras en una imagen para enviar al navegador
     img = BytesIO()
     wordcloud.to_image().save(img, format='PNG')
     img.seek(0)
