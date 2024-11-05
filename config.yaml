@@ -2,8 +2,8 @@ services:
   - type: web
     name: tu-app
     env: python
-    region: oregon  # Puedes cambiar la región si es necesario
-    buildCommand: 
-      - pip install pandas  # Instala pandas directamente
-      - pip install -r requirements.txt  # Opcional, si tienes un archivo requirements.txt para otras dependencias
-    startCommand: python main.py  # Cambia esto si el archivo principal no es main.py
+    region: oregon  
+    buildCommand:
+      - pip install pandas  
+      - pip install -r requirements.txt  
+    startCommand: python main.py 
