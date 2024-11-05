@@ -17,17 +17,19 @@
         }
         h1 {
             color: #333;
+            margin-bottom: 20px;
         }
         .container {
             max-width: 800px;
             width: 100%;
             background-color: #fff;
-            padding: 20px;
+            padding: 30px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             margin-top: 20px;
+            text-align: center;
         }
-        .nav-links, .category-links {
+        .nav-links {
             list-style-type: none;
             padding: 0;
             display: flex;
@@ -35,29 +37,53 @@
             gap: 10px;
             margin-top: 20px;
         }
-        .nav-links li, .category-links li {
+        .nav-links li {
             text-align: center;
         }
-        .nav-links a, .category-links a {
+        .nav-links a {
             text-decoration: none;
             color: #007bff;
             font-weight: bold;
+            display: block;
+            padding: 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
         }
-        .nav-links a:hover, .category-links a:hover {
+        .nav-links a:hover {
+            background-color: #f0f8ff;
             color: #0056b3;
+        }
+        .analysis-section {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
         .analysis-form {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+        .analysis-form h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.25em;
         }
         .analysis-form input {
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             width: 100%;
             max-width: 300px;
+            margin-bottom: 10px;
         }
         .analysis-form button {
             padding: 10px 20px;
@@ -67,6 +93,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+            transition: background-color 0.3s;
         }
         .analysis-form button:hover {
             background-color: #0056b3;
@@ -86,21 +113,23 @@
         </ul>
 
         <!-- Formularios para análisis unidimensional y bidimensional -->
-        <div class="analysis-form">
-            <h2>Análisis Unidimensional</h2>
-            <form action="{{ url_for('analisis_unidimensional') }}" method="post">
-                <input type="text" name="columna" placeholder="Ingrese el nombre de la columna" required>
-                <button type="submit">Realizar Análisis Unidimensional</button>
-            </form>
-        </div>
+        <div class="analysis-section">
+            <div class="analysis-form">
+                <h2>Análisis Unidimensional</h2>
+                <form action="{{ url_for('analisis_unidimensional') }}" method="post">
+                    <input type="text" name="columna" placeholder="Ingrese el nombre de la columna" required>
+                    <button type="submit">Realizar Análisis Unidimensional</button>
+                </form>
+            </div>
 
-        <div class="analysis-form">
-            <h2>Análisis Bidimensional</h2>
-            <form action="{{ url_for('analisis_bidimensional') }}" method="post">
-                <input type="text" name="columna1" placeholder="Nombre de la primera columna" required>
-                <input type="text" name="columna2" placeholder="Nombre de la segunda columna" required>
-                <button type="submit">Realizar Análisis Bidimensional</button>
-            </form>
+            <div class="analysis-form">
+                <h2>Análisis Bidimensional</h2>
+                <form action="{{ url_for('analisis_bidimensional') }}" method="post">
+                    <input type="text" name="columna1" placeholder="Nombre de la primera columna" required>
+                    <input type="text" name="columna2" placeholder="Nombre de la segunda columna" required>
+                    <button type="submit">Realizar Análisis Bidimensional</button>
+                </form>
+            </div>
         </div>
     </div>
 </body>
