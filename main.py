@@ -48,13 +48,19 @@ def graficar_totales():
 
 @app.route('/nube_palabras')
 def mostrar_nube_palabras():
-    # Verifica si `ruta_csv` está definida y es válida
+      # Verifica si ruta_csv está definida y es válida
     if not os.path.isfile(ruta_csv):
         return "Error: La ruta del archivo CSV no está definida o no es válida.", 500
 
-    # Obtiene `conteo_total` usando `analizar_abstracts`
+    print("Archivo CSV encontrado. Analizando abstracts...")
+
+    # Obtiene conteo_total usando analizar_abstracts
     conteo_total = analizar_abstracts(ruta_csv)
-    img = generar_nube_palabras(conteo_total)  # Pasa `conteo_total`, no `ruta_csv`
+    print("Conteo de frecuencia calculado.")
+
+    img = generar_nube_palabras(conteo_total)  # Pasa conteo_total, no ruta_csv
+    print("Nube de palabras generada.")
+
     return send_file(img, mimetype='image/png')
 
 
