@@ -23,31 +23,30 @@
             margin-bottom: 20px;
         }
         .result-container {
-            max-width: 800px;
+            max-width: 600px;
             width: 100%;
             background-color: #fff;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            text-align: center;
         }
         .result-table {
-            margin: 0 auto;
-            text-align: left;
             width: 100%;
             border-collapse: collapse;
         }
         .result-table td {
-            padding: 5px;
+            padding: 10px;
+            vertical-align: top;
         }
         .result-table .label {
             font-weight: bold;
             text-align: left;
-            width: 70%;
+            width: 60%;
+            padding-right: 20px;
         }
         .result-table .value {
             text-align: right;
-            width: 30%;
+            width: 40%;
         }
         a {
             display: inline-block;
@@ -70,23 +69,19 @@
     <div class="result-container">
         <table class="result-table">
             <tr>
-                <td class="label">conteo</td>
-                <td class="value">16545</td>
+                <td class="label">Conteo:</td>
+                <td class="value">{{ resultado['conteo'] }}</td>
             </tr>
             <tr>
-                <td class="label">valores únicos</td>
-                <td class="value">14826</td>
+                <td class="label">Valores Únicos:</td>
+                <td class="value">{{ resultado['valores únicos'] }}</td>
             </tr>
             <tr>
-                <td class="label">más frecuente</td>
-                <td class="value">ACM International Conference Proceeding Series</td>
-            </tr>
-            <tr>
-                <td class="label">frecuencia</td>
-                <td class="value">18</td>
+                <td class="label">Valores Repetidos:</td>
+                <td class="value">{{ resultado['valores repetidos'] }}</td>
             </tr>
         </table>
     </div>
-    <a href="{{ url_for('index') }}">Volver al inicio</a>
+    <a href="{{ url_for('index') }}">Volver al Inicio</a>
 </body>
 </html>

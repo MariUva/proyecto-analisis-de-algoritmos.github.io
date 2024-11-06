@@ -7,15 +7,38 @@ from src.statistics.conteoFrecuencia import analizar_abstracts, generar_nube_pal
 from src.data.data_processing import load_data  # Asegúrate de tener esta importación
 import networkx as nx
 from src.statistics.statistics import descriptive_statistics
-
+from src.union_csv.union_csv import limpiar_columnas_csv, unificar_data
 
 # Carga las variables de entorno desde el archivo .env
 load_dotenv()
 
 app = Flask(__name__)
 
-# Definir ruta_csv a nivel de `main.py`
-ruta_csv = os.getenv("RUTA_CSV", "./data/bases_datos/data_unido.csv")
+# Configuraciones de rutas
+directory_path_csv = os.getenv("DIRECTORY_CSV")
+nombre_documento_unido = os.getenv("NAME_DATA")
+file_path = os.path.join(directory_path_csv, nombre_documento_unido)
+
+def verificar_existencia_data(directory_path_csv, nombre_documento_unido):
+    """Verifica si el archivo unificado ya existe en la ruta especificada."""
+    ruta_completa = os.path.join(directory_path_csv, nombre_documento_unido)
+    return os.path.isfile(ruta_completa)
+
+def cargar_y_preparar_datos():
+    """Carga y prepara los datos; limpia y une si es necesario."""
+    if not verificar_existencia_data(directory_path_csv, nombre_documento_unido):
+        print("Unificando datos...")
+        limpiar_columnas_csv(directory_path_csv)
+        unificar_data(directory_path_csv, nombre_documento_unido)
+    else:
+        print("Los datos ya se encuentran unidos.")
+    
+    # Cargar los datos en un DataFrame
+    return load_data(file_path)
+
+# Cargar los datos al inicio de la aplicación
+df = cargar_y_preparar_datos()
+
 
 @app.route('/')
 
@@ -34,19 +57,6 @@ def analisis_unidimensional():
         else:
             return "Error: La columna especificada no existe en el archivo.", 400
     return render_template('unidimensional.html')
-
-@app.route('/analisis_bidimensional', methods=['GET', 'POST'])
-def analisis_bidimensional():
-    if request.method == 'POST':
-        columna1 = request.form['columna1']
-        columna2 = request.form['columna2']
-        df = load_data(ruta_csv)
-        if columna1 in df.columns and columna2 in df.columns:
-            resultado = descriptive_statistics(df, columna1, columna2)
-            return render_template('resultado.html', resultado=resultado, tipo=f"Análisis Bidimensional para {columna1} y {columna2}")
-        else:
-            return "Error: Una o ambas columnas especificadas no existen en el archivo.", 400
-    return render_template('bidimensional.html')
 
 
 @app.route('/totales')

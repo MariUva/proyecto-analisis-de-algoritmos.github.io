@@ -86,7 +86,7 @@
             color: #333;
             font-size: 1.25em;
         }
-        .analysis-form input {
+        .analysis-form select, .analysis-form button {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -95,11 +95,8 @@
             margin-bottom: 10px;
         }
         .analysis-form button {
-            padding: 10px 20px;
             background-color: #007bff;
             color: #fff;
-            border: none;
-            border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.3s, transform 0.2s ease;
@@ -129,17 +126,22 @@
             <div class="analysis-form">
                 <h2>Análisis Unidimensional</h2>
                 <form action="{{ url_for('analisis_unidimensional') }}" method="post">
-                    <input type="text" name="columna" placeholder="Ingrese el nombre de la columna" required>
+                    <select name="columna" required>
+                        <option value="" disabled selected>Seleccione una columna</option>
+                        <option value="Publication Title">Publication Title</option>
+                        <option value="Title">Title</option>
+                        <option value="Volume">Volume</option>
+                        <option value="Publisher">Publisher</option>
+                        <option value="Issn">ISSN</option>
+                        <option value="Abstract">Abstract</option>
+                        <option value="Author">Author</option>
+                        <option value="Issue">Issue</option>
+                        <option value="DOI">DOI</option>
+                        <option value="Year">Year</option>
+                         <!-- <option value="Country">Country</option> -->
+                         <!-- <option value="Number of citation">Number of citation</option> -->
+                    </select>
                     <button type="submit">Realizar Análisis Unidimensional</button>
-                </form>
-            </div>
-
-            <div class="analysis-form">
-                <h2>Análisis Bidimensional</h2>
-                <form action="{{ url_for('analisis_bidimensional') }}" method="post">
-                    <input type="text" name="columna1" placeholder="Nombre de la primera columna" required>
-                    <input type="text" name="columna2" placeholder="Nombre de la segunda columna" required>
-                    <button type="submit">Realizar Análisis Bidimensional</button>
                 </form>
             </div>
         </div>
