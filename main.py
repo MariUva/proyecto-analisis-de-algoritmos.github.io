@@ -61,7 +61,7 @@ def analisis_unidimensional():
 
 @app.route('/totales')
 def graficar_totales():
-    # Asegúrate de que `ruta_csv` esté definida o cargada correctamente
+    
     if not ruta_csv:
         return "Error: La ruta del archivo CSV no está definida.", 500
 
@@ -84,7 +84,7 @@ def graficar_totales():
 
 @app.route('/nube_palabras')
 def mostrar_nube_palabras():
-      # Verifica si ruta_csv está definida y es válida
+      
     if not os.path.isfile(ruta_csv):
         return "Error: La ruta del archivo CSV no está definida o no es válida.", 500
 
@@ -102,13 +102,13 @@ def mostrar_nube_palabras():
 
 @app.route('/analisis_abstracts')
 def analisis_abstracts():
-    # Asegúrate de que `ruta_csv` esté definida o cargada correctamente
+   
     if not os.path.isfile(ruta_csv):
         return "Error: La ruta del archivo CSV no está definida o no es válida.", 500
 
     conteo_total = analizar_abstracts(ruta_csv)
     # Llama a una función para mostrar resultados de abstracts
-    # Aquí podrías renderizar en una nueva plantilla si se desea mostrar los datos
+    
     return render_template('resultado.html', resultado=conteo_total, tipo="Análisis de Abstracts")
 
 @app.route('/analisis_issn')
