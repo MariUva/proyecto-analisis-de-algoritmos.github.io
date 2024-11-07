@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, send_file
 import os
 from dotenv import load_dotenv
+import matplotlib
+matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 from io import BytesIO
 from src.statistics.conteoFrecuencia import analizar_abstracts, generar_nube_palabras, ruta_csv
@@ -13,6 +15,8 @@ from src.union_csv.union_csv import limpiar_columnas_csv, unificar_data
 load_dotenv()
 
 app = Flask(__name__)
+
+conteo_total = analizar_abstracts(ruta_csv) 
 
 # Configuraciones de rutas
 directory_path_csv = os.getenv("DIRECTORY_CSV")
@@ -61,30 +65,76 @@ def analisis_unidimensional():
 
 @app.route('/totales')
 def graficar_totales():
-    # Asegúrate de que `ruta_csv` esté definida o cargada correctamente
-    if not ruta_csv:
-        return "Error: La ruta del archivo CSV no está definida.", 500
+    # Verifica que `conteo_total` tenga contenido
+    if not conteo_total:
+        return "Error: No se pudo obtener el conteo total.", 500
 
-    conteo_total = analizar_abstracts(ruta_csv)
     categorias = list(conteo_total.keys())
     total_por_categoria = [sum(conteo.values()) for conteo in conteo_total.values()]
 
+    # Configurar el gráfico de totales
     fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(categorias, total_por_categoria, color='lightgreen')
+    bars = ax.bar(categorias, total_por_categoria, color='lightgreen')
     ax.set_title("Totales por Categoría")
     ax.set_xlabel("Categorías")
     ax.set_ylabel("Total Frecuencia")
-    ax.tick_params(axis='x', rotation=45, labelsize=8)
+    ax.tick_params(axis='x', rotation=90, labelsize=8)
 
+    # Agregar conteo en cada barra
+    for bar in bars:
+        yval = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, yval, int(yval), ha='center', va='bottom')
+
+    # Guardar el gráfico en un objeto BytesIO en formato PNG
     img = BytesIO()
     fig.savefig(img, format='png')
     img.seek(0)
     plt.close(fig)
     return send_file(img, mimetype='image/png')
 
+@app.route('/ver_graficos_categorias')
+def ver_graficos_categorias():
+    # Pasar `conteo_total` a la plantilla para mostrar todos los gráficos de categoría
+    return render_template('resultadoGraficos.html', conteo_total=conteo_total)
+
+@app.route('/grafico_categoria/<categoria>')
+def grafico_categoria(categoria):
+    conteo = conteo_total.get(categoria, {})
+
+    if not conteo:
+        return "No se encontró la categoría solicitada", 404
+
+    # Generar un gráfico individual para la categoría especificada
+    img = generar_grafico(categoria, conteo)
+    return send_file(img, mimetype='image/png')
+
+def generar_grafico(categoria, conteo):
+    variables = list(conteo.keys())
+    frecuencias = list(conteo.values())
+
+    # Configurar el gráfico para la categoría específica
+    fig, ax = plt.subplots(figsize=(10, 5))
+    bars = ax.bar(variables, frecuencias, color='skyblue')
+    ax.set_title(f'Frecuencia de Aparición - {categoria}')
+    ax.set_xlabel('Variables')
+    ax.set_ylabel('Frecuencia')
+    ax.tick_params(axis='x', rotation=90, labelsize=8)
+
+    # Agregar conteo en cada barra
+    for bar in bars:
+        yval = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, yval, int(yval), ha='center', va='bottom')
+
+
+    # Guardar el gráfico en un objeto BytesIO en formato PNG
+    img = BytesIO()
+    fig.savefig(img, format='png')
+    img.seek(0)
+    plt.close(fig)
+    return img
+
 @app.route('/nube_palabras')
 def mostrar_nube_palabras():
-      # Verifica si ruta_csv está definida y es válida
     if not os.path.isfile(ruta_csv):
         return "Error: La ruta del archivo CSV no está definida o no es válida.", 500
 
@@ -102,7 +152,6 @@ def mostrar_nube_palabras():
 
 @app.route('/analisis_abstracts')
 def analisis_abstracts():
-    # Asegúrate de que `ruta_csv` esté definida o cargada correctamente
     if not os.path.isfile(ruta_csv):
         return "Error: La ruta del archivo CSV no está definida o no es válida.", 500
 

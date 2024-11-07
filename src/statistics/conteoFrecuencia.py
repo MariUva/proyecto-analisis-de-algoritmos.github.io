@@ -12,6 +12,9 @@ from io import BytesIO
 ruta_csv = r'./data/bases_datos/data_unido.csv'
 
 # Definir categorías y sinónimos
+
+
+
 categorias = {
     "Habilidades": {
         "Abstraction": ["Abstraction"],

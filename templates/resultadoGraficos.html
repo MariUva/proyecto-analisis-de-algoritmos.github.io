@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de Análisis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background-color: #ffffff;
+            height: 100%;
+        }
+        .card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .card h3 {
+            color: #007bff;
+            margin-top: 15px;
+            font-size: 1.25em;
+            white-space: normal; 
+            line-height: 1.2; 
+        }
+        .btn-back {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+        .btn-back:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="title text-center">Análisis de Frecuencia por Categoría</h1>
+
+        
+
+        <!-- Gráficos Individuales de Cada Categoría -->
+        <div class="row g-4 justify-content-center mt-4">
+            {% for categoria, conteo in conteo_total.items() %}
+                <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+                    <div class="card">
+                        <h3>{{ categoria }}</h3>
+                        <img src="{{ url_for('grafico_categoria', categoria=categoria) }}" alt="Gráfico de {{ categoria }}">
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Gráfico de Totales por Categoría -->
+        <div class="row g-4 justify-content-center">
+            <div class="col-12 d-flex align-items-stretch">
+                <div class="card">
+                    <h3>Totales por Categoría</h3>
+                    <img src="{{ url_for('graficar_totales') }}" alt="Gráfico de Totales por Categoría">
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón Volver al Inicio -->
+        <div class="text-center mt-5">
+            <a href="{{ url_for('index') }}" class="btn-back">Volver al inicio</a>
+        </div>
+    </div>
+</body>
+</html>
