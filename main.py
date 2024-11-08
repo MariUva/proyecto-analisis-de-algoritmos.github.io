@@ -65,15 +65,10 @@ def analisis_unidimensional():
 
 @app.route('/totales')
 def graficar_totales():
-<<<<<<< HEAD
+
     # Verifica que `conteo_total` tenga contenido
     if not conteo_total:
         return "Error: No se pudo obtener el conteo total.", 500
-=======
-    
-    if not ruta_csv:
-        return "Error: La ruta del archivo CSV no está definida.", 500
->>>>>>> refs/remotes/origin/main
 
     categorias = list(conteo_total.keys())
     total_por_categoria = [sum(conteo.values()) for conteo in conteo_total.values()]
@@ -141,10 +136,7 @@ def generar_grafico(categoria, conteo):
 
 @app.route('/nube_palabras')
 def mostrar_nube_palabras():
-<<<<<<< HEAD
-=======
-      
->>>>>>> refs/remotes/origin/main
+
     if not os.path.isfile(ruta_csv):
         return "Error: La ruta del archivo CSV no está definida o no es válida.", 500
 
@@ -162,10 +154,6 @@ def mostrar_nube_palabras():
 
 @app.route('/analisis_abstracts')
 def analisis_abstracts():
-<<<<<<< HEAD
-=======
-   
->>>>>>> refs/remotes/origin/main
     if not os.path.isfile(ruta_csv):
         return "Error: La ruta del archivo CSV no está definida o no es válida.", 500
 
