@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from io import BytesIO
 from src.statistics.conteoFrecuencia import analizar_abstracts, generar_nube_palabras, ruta_csv
-from src.data.data_processing import load_data  # Asegúrate de tener esta importación
+from src.data.data_processing import load_data  
 import networkx as nx
 from src.statistics.statistics import descriptive_statistics
 from src.union_csv.union_csv import limpiar_columnas_csv, unificar_data

@@ -124,17 +124,14 @@ def contar_frecuencias(abstract, categorias):
     frecuencias = defaultdict(int)
     abstract = abstract.lower()
     abstract = re.sub(r'[^\w\s]', ' ', abstract)
-    palabras = abstract.split()
+    palabras = set(abstract.split())  # Convertimos a set para búsquedas más rápidas
 
     for categoria, variables in categorias.items():
         for variable, sinonimos in variables.items():
             for sinonimo in sinonimos:
-                patron = r'\b' + re.escape(sinonimo.lower()) + r'\b'
-                for palabra in palabras:
-                    if re.search(patron, palabra):
-                        frecuencias[variable] += 1
+                if sinonimo.lower() in palabras:
+                    frecuencias[variable] += 1
     return frecuencias
-
 # Función para analizar abstracts
 def analizar_abstracts(file_path):
     conteo_total = defaultdict(lambda: defaultdict(int))
@@ -187,7 +184,7 @@ def graficar_totales(conteo_total):
 
 def generar_nube_palabras(conteo_total):
     frecuencias = {variable: count for categoria, variables in conteo_total.items() for variable, count in variables.items()}
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(frecuencias)
+    wordcloud = WordCloud(width=800, height=400, background_color='white', max_words=100).generate_from_frequencies(frecuencias)
 
     img = BytesIO()
     wordcloud.to_image().save(img, format='PNG')
