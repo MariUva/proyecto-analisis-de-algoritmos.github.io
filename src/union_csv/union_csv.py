@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 '''
@@ -89,6 +91,47 @@ def unificar_data(directory_path_csv, nombre_csv_final):
     ruta_completa = os.path.join(directory_path_csv, nombre_csv_final)
     df_final.to_csv(ruta_completa, index=False)
 
+#Metodo para eliminar duplicados
+def eliminar_duplicados(ruta,nombre_archivo):
+    file_path = os.path.join(ruta, nombre_archivo)
+
+        # Leer el archivo CSV
+    df = pd.read_csv(file_path)
+
+     # Concatenar las columnas relevantes (en este caso, 'titulo' y 'abstract') para comparar similitudes
+    texto_concatenado = df[['Title', 'Abstract']].astype(str).agg(' '.join, axis=1)
+    
+    # Crear matriz de similitud utilizando TF-IDF
+    vectorizer = TfidfVectorizer().fit_transform(texto_concatenado)
+    similarity_matrix = cosine_similarity(vectorizer)
+    
+    # Configuración para el filtrado de similitud (ajusta el umbral según tus necesidades)
+    umbral_similitud = 1
+    eliminar_indices = set()
+    
+    # Comparar cada registro con los demás
+    for i in range(len(df)):
+        if i in eliminar_indices:
+            continue
+        for j in range(i + 1, len(df)):
+            if j in eliminar_indices:
+                continue
+            if similarity_matrix[i, j] > umbral_similitud:
+                # Determinar cuál es "menos completo" en base a los valores nulos
+                if df.iloc[i].isna().sum() > df.iloc[j].isna().sum():
+                    print(f"Eliminando registro duplicado: {df.iloc[i]['Title']}")
+                    eliminar_indices.add(i)
+                    
+                else:
+                    print(f"Eliminando registro duplicado: {df.iloc[j]['Title']}")
+                    eliminar_indices.add(j)
+    
+    # Eliminar los registros identificados
+    df_filtrado = df.drop(index=list(eliminar_indices))
+    
+    # Sobrescribir el archivo CSV original con el DataFrame filtrado
+    df_filtrado.to_csv(file_path, index=False)
+    print(f"Archivo '{nombre_archivo}' procesado y sobrescrito con {len(df_filtrado)} registros restantes.")
 
 
 '''

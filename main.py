@@ -9,14 +9,13 @@ from src.statistics.conteoFrecuencia import analizar_abstracts, generar_nube_pal
 from src.data.data_processing import load_data  
 import networkx as nx
 from src.statistics.statistics import descriptive_statistics
-from src.union_csv.union_csv import limpiar_columnas_csv, unificar_data
+from src.union_csv.union_csv import limpiar_columnas_csv, unificar_data, eliminar_duplicados
 
 # Carga las variables de entorno desde el archivo .env
 load_dotenv()
 
 app = Flask(__name__)
 
-conteo_total = analizar_abstracts(ruta_csv) 
 
 # Configuraciones de rutas
 directory_path_csv = os.getenv("DIRECTORY_CSV")
@@ -34,6 +33,7 @@ def cargar_y_preparar_datos():
         print("Unificando datos...")
         limpiar_columnas_csv(directory_path_csv)
         unificar_data(directory_path_csv, nombre_documento_unido)
+        eliminar_duplicados(directory_path_csv, nombre_documento_unido)
     else:
         print("Los datos ya se encuentran unidos.")
     
@@ -42,7 +42,7 @@ def cargar_y_preparar_datos():
 
 # Cargar los datos al inicio de la aplicación
 df = cargar_y_preparar_datos()
-
+conteo_total = analizar_abstracts(file_path) 
 
 @app.route('/')
 
@@ -164,52 +164,65 @@ def analisis_abstracts():
 
 @app.route('/analisis_issn')
 def graficar_nodos_aristas_route():
+    # Verificar que el archivo CSV existe
     if not os.path.isfile(ruta_csv):
         return "Error: La ruta del archivo CSV no está definida o no es válida.", 500
 
+    # Cargar los datos y obtener los ISSN más frecuentes
     df = load_data(ruta_csv)
-    valores_mas_frecuentes = df.iloc[:, 4].value_counts().head(10)
+    valores_mas_frecuentes = df.iloc[:, 2].value_counts().head(10)  # Usar columna 2 como ISSN
     img = graficar_nodos_aristas(valores_mas_frecuentes, df)
     return send_file(img, mimetype='image/png')
 
 def graficar_nodos_aristas(valores_mas_frecuentes, df):
+    """
+    Genera un gráfico de nodos y aristas basado en los valores más frecuentes de ISSN,
+    mostrando relaciones con el país y el total de citas.
+    """
     G = nx.Graph()
     node_colors = []
 
-    for valor in valores_mas_frecuentes.index:
-        frecuencia = valores_mas_frecuentes[valor]
-        datos_filtrados = df[df.iloc[:, 4] == valor]
-        total_citas = datos_filtrados.iloc[:, 11].sum()
-        pais_frecuente = datos_filtrados.iloc[:, 10].mode()[0]
+    # Iterar sobre los ISSN más frecuentes
+    for issn in valores_mas_frecuentes.index:
+        frecuencia = valores_mas_frecuentes[issn]
+        datos_filtrados = df[df.iloc[:, 2] == issn]  # Filtrar datos donde columna 2 (ISSN) coincide
 
-        if valor not in G:
-            G.add_node(valor, label=valor)
+        # Sumar citas y obtener el país más frecuente
+        total_citas = datos_filtrados.iloc[:, 11].sum()  # Columna de citas
+        pais_frecuente = datos_filtrados.iloc[:, 10].mode()[0]  # Columna de país más frecuente
+
+        # Añadir nodo para el ISSN y su color
+        if issn not in G:
+            G.add_node(issn, label=issn)
             node_colors.append("lightblue")
 
+        # Añadir nodo para el país frecuente y la arista
         if pais_frecuente not in G:
             G.add_node(pais_frecuente, label=pais_frecuente)
             node_colors.append("lightgreen")
-        G.add_edge(valor, pais_frecuente, label="País")
+        G.add_edge(issn, pais_frecuente, label="País")
 
+        # Añadir nodo para las citas totales y la arista
         cita_label = f"{total_citas} citas"
         if cita_label not in G:
             G.add_node(cita_label, label=cita_label)
             node_colors.append("lightcoral")
-        G.add_edge(valor, cita_label, label="Citas")
+        G.add_edge(issn, cita_label, label="Citas")
 
+    # Configuración de disposición y visualización del gráfico
     pos = nx.spring_layout(G, seed=42, k=0.5)
     fig, ax = plt.subplots(figsize=(12, 10))
     nx.draw(G, pos, with_labels=True, node_size=3000, node_color=node_colors,
             font_size=10, font_weight="bold", edge_color="gray", ax=ax)
     nx.draw_networkx_edge_labels(G, pos, edge_labels={(u, v): d['label'] for u, v, d in G.edges(data=True)}, font_size=8)
-    plt.title("Gráfico de Nodos y Aristas: Valores Frecuentes, País y Citas")
+    plt.title("Gráfico de Nodos y Aristas: ISSN, País y Citas")
 
+    # Guardar la imagen en un objeto BytesIO y devolverla
     img = BytesIO()
     fig.savefig(img, format='png')
     img.seek(0)
     plt.close(fig)
     return img
-
 
 
 if __name__ == '__main__':
