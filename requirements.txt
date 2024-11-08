@@ -5,3 +5,4 @@ wordcloud
 networkx
 python-dotenv
 gunicorn
+sklearn
