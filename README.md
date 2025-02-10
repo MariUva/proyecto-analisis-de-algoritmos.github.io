@@ -75,3 +75,5 @@ Para pais y numero de citas se utilizo la función random para que diera de mane
 
 Los paises que se tuvieron en cuenta son: Colombia, México, Argentina, Chile, Inglaterra, Brasil, China,
                                           Usa, España, Francia, Alemania, Rusia,  Portugal, India, Ucrania, Afganistan, Nicaragua, Filipinas, Egipto
+
+                                          Cambio
