@@ -1,0 +1,87 @@
+<!-- resultado.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado del Análisis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .result-container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .result-table td {
+            padding: 10px;
+            vertical-align: top;
+        }
+        .result-table .label {
+            font-weight: bold;
+            text-align: left;
+            width: 60%;
+            padding-right: 20px;
+        }
+        .result-table .value {
+            text-align: right;
+            width: 40%;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ tipo }}</h1>
+    <div class="result-container">
+        <table class="result-table">
+            <tr>
+                <td class="label">Conteo:</td>
+                <td class="value">{{ resultado['conteo'] }}</td>
+            </tr>
+            <tr>
+                <td class="label">Valores Únicos:</td>
+                <td class="value">{{ resultado['valores únicos'] }}</td>
+            </tr>
+            <tr>
+                <td class="label">Valores Repetidos:</td>
+                <td class="value">{{ resultado['valores repetidos'] }}</td>
+            </tr>
+        </table>
+    </div>
+    <a href="{{ url_for('index') }}">Volver al Inicio</a>
+</body>
+</html>

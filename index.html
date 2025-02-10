@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio | Aplicación de Análisis</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .title-container {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .nav-links {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .nav-links li {
+            text-align: center;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            display: block;
+            padding: 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s, transform 0.2s ease;
+        }
+        .nav-links a:hover {
+            background-color: #f0f8ff;
+            color: #0056b3;
+            transform: scale(1.05);
+        }
+        .analysis-section {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .analysis-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+        .analysis-form h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.25em;
+        }
+        .analysis-form select, .analysis-form button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 10px;
+        }
+        .analysis-form button {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s ease;
+        }
+        .analysis-form button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="title-container">
+        <h1>Bienvenido a mi aplicación de análisis</h1>
+    </div>
+    <div class="container">
+        <p>Explora las distintas herramientas de análisis disponibles:</p>
+        
+        <!-- Enlaces principales de navegación -->
+        <ul class="nav-links">
+
+           <!--  <li><a href="{{ url_for('graficar_totales') }}">Ver gráfico de totales por categoría</a></li> -->
+            <li><a href="{{ url_for('graficar_nodos_aristas_route') }}">Ver gráfico de nodos y aristas (ISSN)</a></li>
+            <li><a href="{{ url_for('ver_graficos_categorias') }}">Ver gráficos de categorías</a></li> 
+            <li><a href="{{ url_for('mostrar_nube_palabras') }}">Ver nube de palabras</a></li>
+        </ul>
+
+        <div class="analysis-section">
+            <div class="analysis-form">
+                <h2>Análisis Unidimensional</h2>
+                <form action="{{ url_for('analisis_unidimensional') }}" method="post">
+                    <select name="columna" required>
+                        <option value="" disabled selected>Seleccione una columna</option>
+                        <option value="Publication Title">Publication Title</option>
+                        <option value="Title">Title</option>
+                        <option value="Volume">Volume</option>
+                        <option value="Publisher">Publisher</option>
+                        <option value="Issn">ISSN</option>
+                        <option value="Abstract">Abstract</option>
+                        <option value="Author">Author</option>
+                        <option value="Issue">Issue</option>
+                        <option value="DOI">DOI</option>
+                        <option value="Year">Year</option>
+                         <!-- <option value="Country">Country</option> -->
+                         <!-- <option value="Number of citation">Number of citation</option> -->
+                    </select>
+                    <button type="submit">Realizar Análisis Unidimensional</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
